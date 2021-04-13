@@ -20,5 +20,6 @@ from ObjectDetection import views
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('objectdetect/', views.objectdetect),
-    path('trainDQN/', views.trainDQN)
+    path('trainDQN/', views.trainDQN),
+    path('testBandwidthState/', views.testBandwidthState)
 ]

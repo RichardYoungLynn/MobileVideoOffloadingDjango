@@ -21,7 +21,7 @@ else
     ((i++))
     echo "restarting container $i: $id"
     sudo docker start $id
-    # sudo docker exec -it $id python train.py --resume # single-GPU
+    # sudo docker exec -it $id python train_yolo.py --resume # single-GPU
     sudo docker exec -d $id python utils/aws/resume.py # multi-scenario
   done <<<"$list"
 fi

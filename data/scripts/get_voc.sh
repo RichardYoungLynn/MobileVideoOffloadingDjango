@@ -1,7 +1,7 @@
 #!/bin/bash
 # PASCAL VOC dataset http://host.robots.ox.ac.uk/pascal/VOC/
 # Download command: bash data/scripts/get_voc.sh
-# Train command: python train.py --data voc.yaml
+# Train command: python train_yolo.py --data voc.yaml
 # Default dataset location is next to /yolov5:
 #   /parent_folder
 #     /VOC
