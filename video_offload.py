@@ -1,9 +1,8 @@
 '''Observation:
-        Type: Box(3)
+        Type: Box(2)
         Num	Observation               Min        Max
-        0	PeopleNum                 0.0         5.0
-        1	BatteryRemainingLevel     0.0         1.0
-        2	BandwidthQuality          0.0         100.0
+        0	PeopleNum                 0.0         20.0
+        1	BandwidthQuality          0.0         100.0
 
 Actions:
         Type: Discrete(2)
@@ -13,40 +12,51 @@ Actions:
 
 from gym import spaces
 from ObjectDetection.views import getPeopleConfidenceSum, getLocalProcessTime
+from file_operation import readLocalReward, readServerReward
 import numpy as np
+import math
 
 class VideoOffloadEnv():
 
-    state = None
-
     def __init__(self):
         self.action_space = spaces.Discrete(2)
-        self.observation_space = spaces.Box(np.array([0.0, 0.0, 0.0]), np.array([20.0, 1.0, 100.0]))
-        self.state = None
+        self.observation_space = spaces.Box(np.array([0.0, 0.0]), np.array([20.0, 100.0]))
+        self.count = 0
 
-    def step(self, action):
-        people_num, battery_remaining_level, bandwidth_quality = self.state
+    def step(self, action, train):
         if action == 0:
-
-            reward=getPeopleConfidenceSum()/getLocalProcessTime()
+            local_people_num=float(readLocalReward(self.count, train)['local_people_num'])
+            local_people_confidence_sum=float(readLocalReward(self.count, train)['local_people_confidence_sum'])
+            local_process_time=float(readLocalReward(self.count, train)['local_process_time'])
+            reward=(local_people_num*local_people_confidence_sum)/math.exp(local_process_time)
         elif action == 1:
-            pass
+            server_people_num=float(readServerReward(self.count, train)['server_people_num'])
+            server_people_confidence_sum = float(readServerReward(self.count, train)['server_people_confidence_sum'])
+            server_process_and_transmission_time = float(readServerReward(self.count, train)['server_process_and_transmission_time'])
+            reward=(server_people_num*server_people_confidence_sum)/math.exp(server_process_and_transmission_time)
 
-        # self.state = np.array([user_equipment_capacity, edge_server_capacity])
-        #
-        # done = (np.abs(user_equipment_capacity) <= 0) or (np.abs(edge_server_capacity) <= 0)
-        # done = bool(done)
+        done = False
+        if train==1:
+            if (self.count == 927):
+                done = True
+            else:
+                self.count += 1
+        elif train==0:
+            if (self.count == 299):
+                done = True
+            else:
+                self.count += 1
 
-        if not done:
-            reward = -0.1
-        else:
-            reward = self.detect_accuracy - self.energe_consumption + 1
+        state = np.array([readLocalReward(self.count, train)['local_people_num'],
+                          readLocalReward(self.count, train)['bandwidth_quality']])
 
-        return self.state, reward, done, {}
+        return state, reward, done, {}
 
-    def reset(self):
-        self.state = np.array([0, 0, 0])
-        return self.state
+    def reset(self, train):
+        self.count=0
+        state = np.array([readLocalReward(self.count, train)['local_people_num'],
+                          readLocalReward(self.count, train)['bandwidth_quality']])
+        return state
 
     # def render(self, mode='human'):
     #     return None

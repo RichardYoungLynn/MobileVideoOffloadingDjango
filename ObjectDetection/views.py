@@ -38,7 +38,7 @@ def objectdetect(request):
         people_num = results['people_num']
         # server_process_time = results['server_process_time']
         os.remove(os.path.join(origin_image_path, fileImage.name))
-        json_dict = {"code": 200, "boxes": boxes, "ServerPeopleConfidenceSum": confidence_sum, "PeopleNum": people_num}
+        json_dict = {"code": 200, "boxes": boxes, "ServerPeopleConfidenceSum": confidence_sum, "ServerPeopleNum": people_num}
         return JsonResponse(json_dict)
         # return JsonResponse(boxes, safe=False)
         '''print("imageName=" + fileImage.name)
@@ -67,7 +67,7 @@ def testBandwidthState(request):
     return HttpResponse('网络带宽状态获取完成')
 
 def getPeopleConfidenceSum():
-    return people_confidence_sum
+    return local_people_confidence_sum
 
 def getLocalProcessTime():
     return local_process_time

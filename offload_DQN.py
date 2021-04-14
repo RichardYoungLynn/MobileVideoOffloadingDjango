@@ -36,15 +36,17 @@ GAMMA = 0.99  # discount factor of reward
 
 def run_episode(agent, env, rpm):
     total_reward = 0
-    obs = env.reset()
+    obs = env.reset(1)
     # logger.info('The obs in run_episode after reset is:{}'.format(obs))
     # just like [ 0.04565629 -0.00461014 -0.03107543 -0.01817521]
 
     step = 0
     while True:
+        # logger.info('The step is:{}'.format(step))
         step += 1
         action = agent.sample(obs)
-        next_obs, reward, isOver, _ = env.step(action)
+        # logger.info('The action is:{}'.format(action))
+        next_obs, reward, isOver, _ = env.step(action,1)
         rpm.append((obs, action, reward, next_obs, isOver))
         # logger.info('The step function is:{}'.format(env.step(action)))
         # just like (array([ 0.01530615,  0.41110149, -0.03372429, -0.58779079]), 1.0, False, {})
@@ -57,6 +59,7 @@ def run_episode(agent, env, rpm):
              batch_isOver) = rpm.sample(BATCH_SIZE)
             train_loss = agent.learn(batch_obs, batch_action, batch_reward,
                                      batch_next_obs, batch_isOver)
+            # logger.info('The train loss is:{}'.format(train_loss))
 
         total_reward += reward
         obs = next_obs
@@ -69,17 +72,18 @@ def evaluate(agent, env, render=False):
     # test part, run 5 episodes and average
     eval_reward = []
     for i in range(5):
-        obs = env.reset()
+        obs = env.reset(0)
         episode_reward = 0
         isOver = False
         while not isOver:
             action = agent.predict(obs)
             if render:
                 env.render()
-            obs, reward, isOver, _ = env.step(action)
+            obs, reward, isOver, _ = env.step(action,0)
             episode_reward += reward
         eval_reward.append(episode_reward)
     return np.mean(eval_reward)
+
 
 
 def main():
@@ -106,15 +110,16 @@ def main():
     while len(rpm) < MEMORY_WARMUP_SIZE:  # warm up replay memory
         run_episode(agent, env, rpm)
 
-    max_episode = 2000
+    max_episode = 20
 
     # start train
     episode = 0
     while episode < max_episode:
         # train part
-        for i in range(0, 50):
+        for i in range(0, 5):
             total_reward = run_episode(agent, env, rpm)
             episode += 1
+            logger.info('episode:{}    total_reward:{}'.format(episode, total_reward))
 
         eval_reward = evaluate(agent, env)
         logger.info('episode:{}    test_reward:{}'.format(episode, eval_reward))
