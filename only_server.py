@@ -21,6 +21,9 @@ import numpy as np
 import parl
 from parl.utils import logger
 
+from cartpole_model import CartpoleModel
+from cartpole_agent import CartpoleAgent
+from replay_memory import ReplayMemory
 from video_offload import VideoOffloadEnv
 
 LEARN_FREQ = 5  # update parameters every 5 steps
@@ -37,7 +40,7 @@ def run_episode(env):
     step = 0
     while True:
         step += 1
-        next_obs, reward, isOver, _ = env.step(0,1)
+        next_obs, reward, isOver, _ = env.step(1,1)
         total_reward += reward
         if isOver:
             break
@@ -51,12 +54,10 @@ def evaluate(env):
         episode_reward = 0
         isOver = False
         while not isOver:
-            obs, reward, isOver, _ = env.step(0,0)
+            obs, reward, isOver, _ = env.step(1,0)
             episode_reward += reward
         eval_reward.append(episode_reward)
     return np.mean(eval_reward)
-
-
 
 def main():
     env = VideoOffloadEnv()
