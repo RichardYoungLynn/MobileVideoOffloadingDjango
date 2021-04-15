@@ -16,14 +16,9 @@ from parl.utils import check_version_for_fluid  # requires parl >= 1.4.1
 
 check_version_for_fluid()
 
-import gym
 import numpy as np
-import parl
 from parl.utils import logger
 
-from cartpole_model import CartpoleModel
-from cartpole_agent import CartpoleAgent
-from replay_memory import ReplayMemory
 from video_offload import VideoOffloadEnv
 
 LEARN_FREQ = 5  # update parameters every 5 steps

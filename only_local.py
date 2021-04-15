@@ -16,9 +16,7 @@ from parl.utils import check_version_for_fluid  # requires parl >= 1.4.1
 
 check_version_for_fluid()
 
-import gym
 import numpy as np
-import parl
 from parl.utils import logger
 
 from video_offload import VideoOffloadEnv
