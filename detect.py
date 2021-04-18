@@ -127,20 +127,20 @@ def detect(params):
             img = img.unsqueeze(0)
 
         # Inference
-        # t1 = int(round(time.time() * 1000))
+        t1 = int(round(time.time() * 1000))
         t1 = time.time()
         pred = model(img, augment=augment)[0]
 
         # Apply NMS
         pred = non_max_suppression(pred, conf_thres, iou_thres, classes=classes, agnostic=agnostic_nms)
-        # t2 = int(round(time.time() * 1000))
+        t2 = int(round(time.time() * 1000))
         t2 = time.time()
 
         server_process_time = t2 - t1
 
-        # print("t1 =",t1)
-        # print("t2 =", t2)
-        # print(f'process time is {server_process_time}s')
+        print("t1 =",t1)
+        print("t2 =", t2)
+        print(f'process time is {server_process_time}s')
 
         # Apply Classifier
         '''if classify:
@@ -186,7 +186,7 @@ def detect(params):
                     if save_img or view_img:  # Add bbox to image
                         label = f'{names[int(cls)]} {conf:.2f}'
                         plot_one_box(xyxy, im0, label=label, color=colors[int(cls)], line_thickness=3)'''
-    results = {'boxes': boxes, 'confidence_sum': confidence_sum, 'people_num': people_num}
+    results = {'boxes': boxes, 'confidence_sum': confidence_sum, 'people_num': people_num, 'server_process_time': server_process_time}
     return results
 
 '''            # Print time (inference + NMS)

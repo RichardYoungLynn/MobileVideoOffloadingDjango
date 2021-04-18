@@ -36,9 +36,10 @@ def objectdetect(request):
         boxes = results['boxes']
         confidence_sum = results['confidence_sum']
         people_num = results['people_num']
+        server_process_time = results['server_process_time']
         # server_process_time = results['server_process_time']
         os.remove(os.path.join(origin_image_path, fileImage.name))
-        json_dict = {"code": 200, "boxes": boxes, "ServerPeopleConfidenceSum": confidence_sum, "ServerPeopleNum": people_num}
+        json_dict = {"code": 200, "boxes": boxes, "ServerPeopleConfidenceSum": confidence_sum, "ServerPeopleNum": people_num, "ServerProcessTime": server_process_time}
         return JsonResponse(json_dict)
         # return JsonResponse(boxes, safe=False)
         '''print("imageName=" + fileImage.name)

@@ -10,8 +10,8 @@ def readLocalReward(index,train):
     elif train==0:
         line = local_lines_test[index].strip()
     rewards=line.split(' ')
-    result={'local_people_num':rewards[0],'battery_remaining_level': rewards[1],'bandwidth_quality': rewards[2],
-            'local_people_confidence_sum': rewards[3],"local_process_time":rewards[4]}
+    result={'local_people_num':rewards[0],'local_people_confidence_sum': rewards[1],
+            'local_process_time': rewards[2],'file_size': rewards[3]}
     return result
 
 def readServerReward(index,train):
@@ -20,7 +20,8 @@ def readServerReward(index,train):
     elif train==0:
         line=server_lines_test[index].strip()
     rewards=line.split(' ')
-    result={'server_people_num':rewards[0],'server_people_confidence_sum': rewards[1],"server_process_and_transmission_time":rewards[2]}
+    result={'server_people_num':rewards[0],'server_people_confidence_sum': rewards[1],"server_process_time":rewards[2],
+            "server_transmission_time_selftest":rewards[3],"server_transmission_time_4g":rewards[4],"server_transmission_time_5g":rewards[5]}
     return result
 
 if __name__ == '__main__':
