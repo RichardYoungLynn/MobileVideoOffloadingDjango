@@ -10,8 +10,8 @@ def readLocalReward(index,train):
     elif train==0:
         line = local_lines_test[index].strip()
     rewards=line.split(' ')
-    result={'local_people_num':rewards[0],'local_people_confidence_sum': rewards[1],
-            'local_process_time': rewards[2],'file_size': rewards[3]}
+    result={'local_people_num':rewards[0],'local_people_confidence_sum': rewards[1],'local_process_time': rewards[2],
+            'file_size': rewards[3],'memory_usage': rewards[4],'cpu_usage': rewards[5]}
     return result
 
 def readServerReward(index,train):
