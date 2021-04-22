@@ -17,6 +17,8 @@ from parl.utils import check_version_for_fluid  # requires parl >= 1.4.1
 check_version_for_fluid()
 
 import numpy as np
+import time
+import math
 import parl
 from parl.utils import logger
 
@@ -67,7 +69,7 @@ def run_episode(agent, env, rpm):
     return total_reward
 
 
-def evaluate(agent, env, render=False):
+def evaluate(agent, env):
     # test part, run 5 episodes and average
     eval_reward = []
     for i in range(5):
@@ -76,13 +78,10 @@ def evaluate(agent, env, render=False):
         isOver = False
         while not isOver:
             action = agent.predict(obs)
-            if render:
-                env.render()
             obs, reward, isOver, _ = env.step(action,0)
             episode_reward += reward
         eval_reward.append(episode_reward)
     return np.mean(eval_reward)
-
 
 
 def main():
@@ -109,19 +108,28 @@ def main():
     while len(rpm) < MEMORY_WARMUP_SIZE:  # warm up replay memory
         run_episode(agent, env, rpm)
 
-    max_episode = 20
+    max_episode = 100
 
     # start train
-    episode = 0
-    while episode < max_episode:
+    log_list = []
+    fo = open("log/"+str(math.floor(time.time()*1000.0))+"dqn.txt", "w")
+    train_episode = 0
+    test_episode=0
+    while train_episode < max_episode:
         # train part
         for i in range(0, 5):
             total_reward = run_episode(agent, env, rpm)
-            episode += 1
-            logger.info('episode:{}    total_reward:{}'.format(episode, total_reward))
+            train_episode += 1
+            log_list.append(str(train_episode)+" "+str(total_reward)+"\n")
+            logger.info('train_episode:{}    total_reward:{}'.format(train_episode, total_reward))
 
         eval_reward = evaluate(agent, env)
-        logger.info('episode:{}    test_reward:{}'.format(episode, eval_reward))
+        log_list.append("T "+str(test_episode) + " " + str(eval_reward) + "\n")
+        logger.info('test_episode:{}    test_reward:{}'.format(test_episode, eval_reward))
+        test_episode+=1
+
+    fo.writelines(log_list)
+    fo.close()
 
 
 if __name__ == '__main__':

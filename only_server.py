@@ -17,6 +17,8 @@ from parl.utils import check_version_for_fluid  # requires parl >= 1.4.1
 check_version_for_fluid()
 
 import numpy as np
+import math
+import time
 from parl.utils import logger
 
 from video_offload import VideoOffloadEnv
@@ -56,18 +58,26 @@ def evaluate(env):
 
 def main():
     env = VideoOffloadEnv()
-    max_episode = 20
-    # start train
-    episode = 0
-    while episode < max_episode:
+
+    max_episode = 100
+    log_list = []
+    fo = open("log/" + str(math.floor(time.time() * 1000.0)) + "server.txt", "w")
+    train_episode = 0
+    test_episode = 0
+    while train_episode < max_episode:
         # train part
         for i in range(0, 5):
             total_reward = run_episode(env)
-            episode += 1
-            logger.info('episode:{}    total_reward:{}'.format(episode, total_reward))
+            train_episode += 1
+            logger.info('train_episode:{}    total_reward:{}'.format(train_episode, total_reward))
 
         eval_reward = evaluate(env)
-        logger.info('episode:{}    test_reward:{}'.format(episode, eval_reward))
+        log_list.append("T " + str(test_episode) + " " + str(eval_reward) + "\n")
+        logger.info('test_episode:{}    test_reward:{}'.format(test_episode, eval_reward))
+        test_episode += 1
+
+    fo.writelines(log_list)
+    fo.close()
 
 
 if __name__ == '__main__':

@@ -138,9 +138,9 @@ def detect(params):
 
         server_process_time = t2 - t1
 
-        print("t1 =",t1)
-        print("t2 =", t2)
-        print(f'process time is {server_process_time}s')
+        # print("t1 =",t1)
+        # print("t2 =", t2)
+        # print(f'process time is {server_process_time}s')
 
         # Apply Classifier
         '''if classify:

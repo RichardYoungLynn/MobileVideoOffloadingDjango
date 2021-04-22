@@ -507,7 +507,7 @@ def print_mutation(hyp, results, yaml_file='hyp_evolved.yaml', bucket=''):
     if bucket:
         url = 'gs://%s/evolve.txt' % bucket
         if gsutil_getsize(url) > (os.path.getsize('evolve.txt') if os.path.exists('evolve.txt') else 0):
-            os.system('gsutil cp %s .' % url)  # download evolve.txt if larger than local
+            os.system('gsutil cp %s .' % url)  # download evolve.txt if larger than Local_log
 
     with open('evolve.txt', 'a') as f:  # append result
         f.write(c + b + '\n')

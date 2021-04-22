@@ -205,7 +205,7 @@ class LoadWebcam:  # for inference
         self.stride = stride
 
         if pipe.isnumeric():
-            pipe = eval(pipe)  # local camera
+            pipe = eval(pipe)  # Local_log camera
         # pipe = 'rtsp://192.168.1.64/1'  # IP camera
         # pipe = 'rtsp://username:password@192.168.1.64/1'  # IP camera with login
         # pipe = 'http://wmccpinetop.axiscam.net/mjpg/video.mjpg'  # IP golf camera
@@ -226,7 +226,7 @@ class LoadWebcam:  # for inference
             raise StopIteration
 
         # Read frame
-        if self.pipe == 0:  # local camera
+        if self.pipe == 0:  # Local_log camera
             ret_val, img0 = self.cap.read()
             img0 = cv2.flip(img0, 1)  # flip left-right
         else:  # IP camera
@@ -362,8 +362,8 @@ class LoadImagesAndLabels(Dataset):  # for training/testing
                     with open(p, 'r') as t:
                         t = t.read().strip().splitlines()
                         parent = str(p.parent) + os.sep
-                        f += [x.replace('./', parent) if x.startswith('./') else x for x in t]  # local to global path
-                        # f += [p.parent / x.lstrip(os.sep) for x in t]  # local to global path (pathlib)
+                        f += [x.replace('./', parent) if x.startswith('./') else x for x in t]  # Local_log to global path
+                        # f += [p.parent / x.lstrip(os.sep) for x in t]  # Local_log to global path (pathlib)
                 else:
                     raise Exception(f'{prefix}{p} does not exist')
             self.img_files = sorted([x.replace('/', os.sep) for x in f if x.split('.')[-1].lower() in img_formats])
