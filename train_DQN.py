@@ -78,6 +78,7 @@ def evaluate(agent, env):
         isOver = False
         while not isOver:
             action = agent.predict(obs)
+            # logger.info('The action is :{}'.format(action))
             obs, reward, isOver, _ = env.step(action,0)
             episode_reward += reward
         eval_reward.append(episode_reward)
@@ -117,7 +118,7 @@ def main():
     test_episode=0
     while train_episode < max_episode:
         # train part
-        for i in range(0, 5):
+        for i in range(0, 20):
             total_reward = run_episode(agent, env, rpm)
             train_episode += 1
             log_list.append(str(train_episode)+" "+str(total_reward)+"\n")

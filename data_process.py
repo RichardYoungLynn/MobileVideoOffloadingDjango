@@ -71,42 +71,110 @@ def writeBandwidthInfoToDataset():
 
 def createLocalDataset():
     list=[]
-    fo1 = open("data/rl_data/test_local.txt", "r")
-    fo2 = open("data/rl_data/test_file_size.txt", "r")
-    lines1=fo1.readlines()
-    lines2=fo2.readlines()
+    fo1 = open("data/rl_data/test_file_size.txt", "r")
+    fo2 = open("data/rl_data/test_local.txt", "r")
+    fo3 = open("data/rl_data/test_local_server_process_time.txt", "r")
+    fo4 = open("data/rl_data/test_mem_cpu_usage.txt", "r")
+    lines1 = fo1.readlines()
+    lines2 = fo2.readlines()
+    lines3 = fo3.readlines()
+    lines4 = fo4.readlines()
     fo1.close()
     fo2.close()
+    fo3.close()
+    fo4.close()
+    random.shuffle(lines1)
+    random.shuffle(lines3)
+    random.shuffle(lines4)
     len1=len(lines1)
     for index in range(len1):
-        states=lines1[index].strip().split(' ')
-        new_line=states[0]+' '+states[3]+' '+states[4]+' '+lines2[index].strip()+'\n'
-        list.append(new_line)
+        states1 = lines1[index].strip().split(' ')
+        states2 = lines2[index].strip().split(' ')
+        states3 = lines3[index].strip().split(' ')
+        states4 = lines4[index].strip().split(' ')
+        line=states2[0]+' '+states2[1]+' '+states1[1]+' '+states4[1]+' '+states4[2]+' '+states2[2]+' '+states3[1]+"\n"
+        list.append(line)
 
-    fo3=open("data/rl_data/test_local.txt", "w")
-    fo3.writelines(list)
-    fo3.close()
+    fo=open("data/rl_data/test_local.txt", "w")
+    fo.writelines(list)
+    fo.close()
 
 
 def createServerDataset():
-    list=[]
-    fo1 = open("data/rl_data/test_server.txt", "r")
-    fo2 = open("data/rl_data/test_file_size.txt", "r")
-    lines1=fo1.readlines()
-    lines2=fo2.readlines()
+    list = []
+    # fo1 = open("data/rl_data/train_server.txt", "r")
+    # fo2 = open("data/rl_data/train_local_server_process_time.txt", "r")
+    # fo3 = open("data/rl_data/train_file_size.txt", "r")
+    # lines1 = fo1.readlines()
+    # lines2 = fo2.readlines()
+    # lines3 = fo3.readlines()
+    # fo1.close()
+    # fo2.close()
+    # fo3.close()
+    # random.shuffle(lines1)
+    # random.shuffle(lines3)
+    # random.shuffle(lines4)
+    # len1 = len(lines1)
+    # for index in range(len1):
+    #     states1 = lines1[index].strip().split(' ')
+    #     states2 = lines2[index].strip().split(' ')
+    #     states3 = lines3[index].strip().split(' ')
+    #     states4 = lines4[index].strip().split(' ')
+    #     line = states2[0] + ' ' + states2[1] + ' ' + states1[1] + ' ' + states4[1] + ' ' + states4[2] + ' ' + states2[
+    #         2] + ' ' + states3[1] + "\n"
+    #     list.append(line)
+    #
+    # fo = open("data/rl_data/test_local.txt", "w")
+    # fo.writelines(list)
+    # fo.close()
+
+
+def createDataset():
+    list1 = []
+    list2 = []
+    fo1 = open("data/rl_data/test_file_size.txt", "r")
+    fo2 = open("data/rl_data/test_local.txt", "r")
+    fo3 = open("data/rl_data/test_local_server_process_time.txt", "r")
+    fo4 = open("data/rl_data/test_mem_cpu_usage.txt", "r")
+    fo5 = open("data/rl_data/test_server.txt", "r")
+    lines1 = fo1.readlines()
+    lines2 = fo2.readlines()
+    lines3 = fo3.readlines()
+    lines4 = fo4.readlines()
+    lines5 = fo5.readlines()
     fo1.close()
     fo2.close()
-    len1=len(lines1)
-    for index in range(len1):
-        time1=float(lines2[index].strip())/20000000.0
-        time2=float(lines2[index].strip())/50000000.0
-        time3=float(lines2[index].strip())/100000000.0
-        new_line=lines1[index].strip()+' '+str(time1)+' '+str(time2)+' '+str(time3)+'\n'
-        list.append(new_line)
-
-    fo3=open("data/rl_data/test_server.txt", "w")
-    fo3.writelines(list)
     fo3.close()
+    fo4.close()
+    fo5.close()
+    random.shuffle(lines1)
+    random.shuffle(lines3)
+    random.shuffle(lines4)
+    len1 = len(lines1)
+    for index in range(len1):
+        states1 = lines1[index].strip().split(' ')
+        states2 = lines2[index].strip().split(' ')
+        states3 = lines3[index].strip().split(' ')
+        states4 = lines4[index].strip().split(' ')
+        states5 = lines5[index].strip().split(' ')
+
+        line1 = states2[0] + ' ' + states2[1] + ' ' + states1[1] + ' ' + states4[1] + ' ' + states4[2] + ' ' + states2[2] + ' ' + states3[1] + '\n'
+        list1.append(line1)
+
+        line2 = states5[0] + ' ' + states5[1] + ' ' + states5[2] + ' ' + states3[2] + ' '
+        time1 = float(states1[1]) / 20000000.0
+        time2 = float(states1[1]) / 50000000.0
+        time3 = float(states1[1]) / 100000000.0
+        line2 = line2 + str(time1) + ' ' + str(time2) + ' ' + str(time3) + '\n'
+        list2.append(line2)
+
+    fo = open("data/rl_data/test_local.txt", "w")
+    fo.writelines(list1)
+    fo.close()
+
+    fo = open("data/rl_data/test_server.txt", "w")
+    fo.writelines(list2)
+    fo.close()
 
 
 def test():
@@ -259,6 +327,20 @@ def createLocalAndServerProcessTimeNormalDistribution():
     # plt.show()
 
 
+def addIndex(filename):
+    list = []
+    fo = open("data/rl_data/"+filename+".txt", "r")
+    lines = fo.readlines()
+    fo.close()
+    for index in range(len(lines)):
+        line = str(index) + " " + lines[index].strip() + "\n"
+        list.append(line)
+
+    fo = open("data/rl_data/"+filename+".txt", "w")
+    fo.writelines(list)
+    fo.close()
+
+
 if __name__ == '__main__':
     # createBandwidthInfo()
     # writeBandwidthInfoToDataset()
@@ -268,6 +350,20 @@ if __name__ == '__main__':
     # createMemoryCPUInfo()
     # writeMemoryCPUInfoToDataset()
     # createLocalPeopleNumNormalDistribution()
-    createFileSizeNormalDistribution()
-    createMemCpuUsageNormalDistribution()
-    createLocalAndServerProcessTimeNormalDistribution()
+    # createFileSizeNormalDistribution()
+    # createMemCpuUsageNormalDistribution()
+    # createLocalAndServerProcessTimeNormalDistribution()
+
+    # addIndex("test_file_size")
+    # addIndex("test_local")
+    # addIndex("test_local_server_process_time")
+    # addIndex("test_mem_cpu_usage")
+    # addIndex("test_server")
+
+    # addIndex("train_file_size")
+    # addIndex("train_local")
+    # addIndex("train_local_server_process_time")
+    # addIndex("train_mem_cpu_usage")
+    # addIndex("train_server")
+
+    createDataset()

@@ -35,27 +35,29 @@ class VideoOffloadEnv():
 
     def step(self, action, train):
         if action == 0:
-            local_people_confidence_sum=float(readLocalReward(self.count, train)['local_people_confidence_sum'])
+            local_confidence_sum=float(readLocalReward(self.count, train)['local_confidence_sum'])
             local_process_time=float(readLocalReward(self.count, train)['local_process_time'])
             memory_usage = float(readLocalReward(self.count, train)['memory_usage'])
             cpu_usage = float(readLocalReward(self.count, train)['cpu_usage'])
-            reward=local_people_confidence_sum/math.exp(local_process_time)-(memory_usage+cpu_usage)/2.0*math.exp((200.0/3600.0)*local_process_time)
+            r1 = local_confidence_sum / local_process_time
+            r2 = math.exp((memory_usage + cpu_usage) * 300 * local_process_time * 0.001)
+            reward = r1 - r2
         elif action == 1:
-            server_people_confidence_sum = float(readServerReward(self.count, train)['server_people_confidence_sum'])
+            server_confidence_sum = float(readServerReward(self.count, train)['server_confidence_sum'])
             server_process_time = float(readServerReward(self.count, train)['server_process_time'])
             server_transmission_time_selftest = float(readServerReward(self.count, train)['server_transmission_time_selftest'])
             server_transmission_time_4g = float(readServerReward(self.count, train)['server_transmission_time_4g'])
             server_transmission_time_5g = float(readServerReward(self.count, train)['server_transmission_time_5g'])
-            reward=server_people_confidence_sum/math.exp(server_process_time+server_transmission_time_4g)
+            reward=server_confidence_sum/(server_process_time+server_transmission_time_selftest)
 
         done = False
         if train==1:
-            if (self.count == 927):
+            if (self.count == 930):
                 done = True
             else:
                 self.count += 1
         elif train==0:
-            if (self.count == 299):
+            if (self.count == 320):
                 done = True
             else:
                 self.count += 1
