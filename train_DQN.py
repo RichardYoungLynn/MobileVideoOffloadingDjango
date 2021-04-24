@@ -73,13 +73,13 @@ def evaluate(agent, env):
     # test part, run 5 episodes and average
     eval_reward = []
     for i in range(5):
-        obs = env.reset(0)
+        obs = env.reset(1)
         episode_reward = 0
         isOver = False
         while not isOver:
             action = agent.predict(obs)
-            # logger.info('The action is :{}'.format(action))
-            obs, reward, isOver, _ = env.step(action,0)
+            logger.info('The action is :{}'.format(action))
+            obs, reward, isOver, _ = env.step(action, 1)
             episode_reward += reward
         eval_reward.append(episode_reward)
     return np.mean(eval_reward)
@@ -102,14 +102,14 @@ def main():
         algorithm,
         obs_dim=obs_shape[0],
         act_dim=action_dim,
-        e_greed=0.1,  # explore
+        e_greed=0.5,  # explore
         e_greed_decrement=1e-6
     )  # probability of exploring is decreasing during training
 
     while len(rpm) < MEMORY_WARMUP_SIZE:  # warm up replay memory
         run_episode(agent, env, rpm)
 
-    max_episode = 100
+    max_episode = 10000
 
     # start train
     log_list = []
@@ -118,11 +118,12 @@ def main():
     test_episode=0
     while train_episode < max_episode:
         # train part
-        for i in range(0, 20):
+        for i in range(0, 100):
             total_reward = run_episode(agent, env, rpm)
             train_episode += 1
             log_list.append(str(train_episode)+" "+str(total_reward)+"\n")
-            logger.info('train_episode:{}    total_reward:{}'.format(train_episode, total_reward))
+            # print(env.record)
+            # logger.info('train_episode:{}    total_reward:{}'.format(train_episode, total_reward))
 
         eval_reward = evaluate(agent, env)
         log_list.append("T "+str(test_episode) + " " + str(eval_reward) + "\n")

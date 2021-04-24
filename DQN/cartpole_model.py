@@ -23,10 +23,10 @@ class CartpoleModel(parl.Model):
         hid2_size = 128
         self.fc1 = layers.fc(size=hid1_size, act='relu')
         self.fc2 = layers.fc(size=hid2_size, act='relu')
-        self.fc6 = layers.fc(size=act_dim, act=None)
+        self.fc3 = layers.fc(size=act_dim, act=None)
 
     def value(self, obs):
         h1 = self.fc1(obs)
         h2 = self.fc2(h1)
-        Q = self.fc6(h2)
+        Q = self.fc3(h2)
         return Q

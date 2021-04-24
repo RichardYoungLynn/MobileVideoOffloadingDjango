@@ -132,11 +132,11 @@ def createServerDataset():
 def createDataset():
     list1 = []
     list2 = []
-    fo1 = open("data/rl_data/test_file_size.txt", "r")
-    fo2 = open("data/rl_data/test_local.txt", "r")
-    fo3 = open("data/rl_data/test_local_server_process_time.txt", "r")
-    fo4 = open("data/rl_data/test_mem_cpu_usage.txt", "r")
-    fo5 = open("data/rl_data/test_server.txt", "r")
+    fo1 = open("data/rl_data/train_file_size.txt", "r")
+    fo2 = open("data/rl_data/train_local.txt", "r")
+    fo3 = open("data/rl_data/train_local_server_process_time.txt", "r")
+    fo4 = open("data/rl_data/train_mem_cpu_usage.txt", "r")
+    fo5 = open("data/rl_data/train_server.txt", "r")
     lines1 = fo1.readlines()
     lines2 = fo2.readlines()
     lines3 = fo3.readlines()
@@ -168,11 +168,11 @@ def createDataset():
         line2 = line2 + str(time1) + ' ' + str(time2) + ' ' + str(time3) + '\n'
         list2.append(line2)
 
-    fo = open("data/rl_data/test_local.txt", "w")
+    fo = open("data/rl_data/train_local.txt", "w")
     fo.writelines(list1)
     fo.close()
 
-    fo = open("data/rl_data/test_server.txt", "w")
+    fo = open("data/rl_data/train_server.txt", "w")
     fo.writelines(list2)
     fo.close()
 
@@ -341,6 +341,47 @@ def addIndex(filename):
     fo.close()
 
 
+def shuffleDataset():
+    fo1 = open("data/rl_data/train_local.txt", "r")
+    fo2 = open("data/rl_data/train_server.txt", "r")
+    lines1 = fo1.readlines()
+    lines2 = fo2.readlines()
+    fo1.close()
+    fo2.close()
+
+    state = np.random.get_state()
+    np.random.shuffle(lines1)
+    print(lines1)
+    print("-----------------------------------------------------------")
+    # result:[6 4 5 3 7 2 0 1 8 9]
+    np.random.set_state(state)
+    np.random.shuffle(lines2)
+    print(lines2)
+
+    fo = open("data/rl_data/train_local.txt", "w")
+    fo.writelines(lines1)
+    fo.close()
+    fo = open("data/rl_data/train_server.txt", "w")
+    fo.writelines(lines2)
+    fo.close()
+
+
+def createTestEnv():
+    num = 232
+    list = []
+    fo = open("data/rl_data/train_local.txt", "w")
+
+    for index in range(num):
+        list.append("0\n")
+        list.append("1\n")
+        list.append("2\n")
+        list.append("3\n")
+
+    random.shuffle(list)
+    fo.writelines(list)
+    fo.close()
+
+
 if __name__ == '__main__':
     # createBandwidthInfo()
     # writeBandwidthInfoToDataset()
@@ -366,4 +407,18 @@ if __name__ == '__main__':
     # addIndex("train_mem_cpu_usage")
     # addIndex("train_server")
 
-    createDataset()
+    # createDataset()
+
+    shuffleDataset()
+    # a = [0,1,2,3,4]
+    # b = [10,11,12,13,14]
+    # print(a, b)
+    # # result:[0 1 2 3 4 5 6 7 8 9] [10 11 12 13 14 15 16 17 18 19]
+    # state = np.random.get_state()
+    # np.random.shuffle(a)
+    # print(a)
+    # # result:[6 4 5 3 7 2 0 1 8 9]
+    # np.random.set_state(state)
+    # np.random.shuffle(b)
+    # print(b)
+    # result:[16 14 15 13 17 12 10 11 18 19]
