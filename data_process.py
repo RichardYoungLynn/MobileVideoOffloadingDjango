@@ -198,16 +198,16 @@ def test():
     for index in range(len1):
         states1 = lines1[index].strip().split(' ')
         states2 = lines2[index].strip().split(' ')
-        people_num_sum_local+=float(states1[0])
-        conf_sum_local+=float(states1[1])
-        process_time_sum_local+=float(states1[2])
-        file_size_sum_local+=float(states1[3])
-        people_num_sum_server+=float(states2[0])
-        conf_sum_server+=float(states2[1])
-        process_time_sum_server+=float(states2[2])
-        transmission_time1_sum_server+=float(states2[3])
-        transmission_time2_sum_server+=float(states2[4])
-        transmission_time3_sum_server+=float(states2[5])
+        people_num_sum_local+=float(states1[1])
+        conf_sum_local+=float(states1[5])
+        process_time_sum_local+=float(states1[6])
+        file_size_sum_local+=float(states1[2])
+        people_num_sum_server+=float(states2[1])
+        conf_sum_server+=float(states2[2])
+        process_time_sum_server+=float(states2[3])
+        transmission_time1_sum_server+=float(states2[4])
+        transmission_time2_sum_server+=float(states2[5])
+        transmission_time3_sum_server+=float(states2[6])
 
     print("people_num_avg_local="+str(people_num_sum_local/len1))
     print("conf_avg_local=" +str(conf_sum_local/len1))
@@ -221,7 +221,7 @@ def test():
     print("transmission_time3_avg_server=" +str(transmission_time3_sum_server/len1))
 
     print("--------------------------")
-    local_reward_part1=(conf_sum_local / len1)/math.exp(process_time_sum_local/len1)
+    local_reward_part1=(conf_sum_local / len1)/(process_time_sum_local/len1)
     print("local_reward_part1="+str(local_reward_part1))
 
     server_reward_time1 = (conf_sum_server / len1) / math.exp((process_time_sum_server / len1)+(transmission_time1_sum_server/len1))
@@ -231,20 +231,20 @@ def test():
     print("server_reward_time2="+str(server_reward_time2))
     print("server_reward_time3="+str(server_reward_time3))
     print("--------------------------")
-    print(math.exp(284 / 3600 *(process_time_sum_local/len1)))
-    print(math.exp(541 / 3600*(process_time_sum_local/len1)))
-    print(math.exp(849 / 3600*(process_time_sum_local/len1)))
-    print(math.exp(1038 / 3600*(process_time_sum_local/len1)))
-    print(math.exp(1209 / 3600*(process_time_sum_local/len1)))
-    print(math.exp(1261 / 3600*(process_time_sum_local/len1)))
-    print("--------------------------")
-    print(math.exp(62 / 3600 * (process_time_sum_local / len1)))
-    print(math.exp(103 / 3600 * (process_time_sum_local / len1)))
-    print(math.exp(135 / 3600 * (process_time_sum_local / len1)))
-    print(math.exp(179 / 3600 * (process_time_sum_local / len1)))
-    print(math.exp(200 / 3600 * (process_time_sum_local / len1)))
-    print(math.exp(232 / 3600 * (process_time_sum_local / len1)))
-    print(math.exp(247 / 3600 * (process_time_sum_local / len1)))
+    # print(math.exp(284 / 3600 *(process_time_sum_local/len1)))
+    # print(math.exp(541 / 3600*(process_time_sum_local/len1)))
+    # print(math.exp(849 / 3600*(process_time_sum_local/len1)))
+    # print(math.exp(1038 / 3600*(process_time_sum_local/len1)))
+    # print(math.exp(1209 / 3600*(process_time_sum_local/len1)))
+    # print(math.exp(1261 / 3600*(process_time_sum_local/len1)))
+    # print("--------------------------")
+    # print(math.exp(62 / 3600 * (process_time_sum_local / len1)))
+    # print(math.exp(103 / 3600 * (process_time_sum_local / len1)))
+    # print(math.exp(135 / 3600 * (process_time_sum_local / len1)))
+    # print(math.exp(179 / 3600 * (process_time_sum_local / len1)))
+    # print(math.exp(200 / 3600 * (process_time_sum_local / len1)))
+    # print(math.exp(232 / 3600 * (process_time_sum_local / len1)))
+    # print(math.exp(247 / 3600 * (process_time_sum_local / len1)))
 
 
 def createLocalPeopleNumNormalDistribution():
@@ -382,12 +382,16 @@ def createTestEnv():
     fo.close()
 
 
+def layering():
+    pass
+
+
 if __name__ == '__main__':
     # createBandwidthInfo()
     # writeBandwidthInfoToDataset()
     # createLocalDataset()
     # createServerDataset()
-    # test()
+    test()
     # createMemoryCPUInfo()
     # writeMemoryCPUInfoToDataset()
     # createLocalPeopleNumNormalDistribution()
@@ -409,7 +413,7 @@ if __name__ == '__main__':
 
     # createDataset()
 
-    shuffleDataset()
+    # shuffleDataset()
     # a = [0,1,2,3,4]
     # b = [10,11,12,13,14]
     # print(a, b)

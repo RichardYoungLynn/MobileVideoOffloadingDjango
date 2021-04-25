@@ -49,7 +49,7 @@ def readLocalReward(index,train):
     elif train==0:
         line = local_lines_test[index].strip()
     rewards=line.split(' ')
-    result={'index':rewards[0],'local_people_num':rewards[1],'file_size': rewards[2],'memory_usage': rewards[3],
+    result={'index':rewards[0],'local_people_num':rewards[1],'file_size': str(float(rewards[2])/8388608.0),'memory_usage': rewards[3],
             'cpu_usage': rewards[4],'local_confidence_sum': rewards[5],'local_process_time': rewards[6]}
     return result
 
@@ -100,29 +100,29 @@ def test():
 
         # print("local_people_num = "+str(local_people_num)+", server_people_num = "+str(server_people_num)+", offload = "+str(local_people_num  > 5))
 
-        offload = local_r1 - 1.5 < server_reward
-        if offload:
-            server += 1
-            max_reward += server_reward
-        else:
-            local += 1
-            max_reward += local_reward
-        print("index = " + str(i)  + ", server_reward = " + str(server_reward) + ", local_r1 - 1.5 = " + str(local_r1 - 1.5)
-              + ", offload = " + str(offload))
-
-    print("local = " + str(local) + ", server = " + str(server))
-
-    #     offload = local_reward<server_reward
+    #     offload = local_r1 - 1.5 < server_reward
     #     if offload:
-    #         server+=1
-    #         max_reward+=server_reward
+    #         server += 1
+    #         max_reward += server_reward
     #     else:
-    #         local+=1
+    #         local += 1
     #         max_reward += local_reward
-    #     print("index = "+str(i)+", local_reward = "+str(local_reward)+", server_reward = "+str(server_reward)
-    #           +", local_r1 = "+str(local_r1)+", local_r2 = "+str(local_r2)+", offload = "+str(local_reward<server_reward))
+    #     print("index = " + str(i)  + ", server_reward = " + str(server_reward) + ", local_r1 - 1.5 = " + str(local_r1 - 1.5)
+    #           + ", offload = " + str(offload))
     #
-    # print("local = "+str(local)+", server = "+str(server)+", max_reward = "+str(max_reward)+", local_reward_sum = "+str(local_reward_sum)+", server_reward_sum = "+str(server_reward_sum))
+    # print("local = " + str(local) + ", server = " + str(server))
+
+        offload = local_reward<server_reward
+        if offload:
+            server+=1
+            max_reward+=server_reward
+        else:
+            local+=1
+            max_reward += local_reward
+        print("index = "+str(i)+", local_reward = "+str(local_reward)+", server_reward = "+str(server_reward)
+              +", local_r1 = "+str(local_r1)+", local_r2 = "+str(local_r2)+", offload = "+str(local_reward<server_reward))
+
+    print("local = "+str(local)+", server = "+str(server)+", max_reward = "+str(max_reward)+", local_reward_sum = "+str(local_reward_sum)+", server_reward_sum = "+str(server_reward_sum))
 
 
 

@@ -78,7 +78,7 @@ def evaluate(agent, env):
         isOver = False
         while not isOver:
             action = agent.predict(obs)
-            logger.info('The action is :{}'.format(action))
+            # logger.info('The action is :{}'.format(action))
             obs, reward, isOver, _ = env.step(action, 1)
             episode_reward += reward
         eval_reward.append(episode_reward)
@@ -102,14 +102,14 @@ def main():
         algorithm,
         obs_dim=obs_shape[0],
         act_dim=action_dim,
-        e_greed=0.5,  # explore
+        e_greed=0.9,  # explore
         e_greed_decrement=1e-6
     )  # probability of exploring is decreasing during training
 
     while len(rpm) < MEMORY_WARMUP_SIZE:  # warm up replay memory
         run_episode(agent, env, rpm)
 
-    max_episode = 10000
+    max_episode = 500000
 
     # start train
     log_list = []
