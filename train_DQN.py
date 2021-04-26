@@ -26,6 +26,7 @@ from DQN.cartpole_model import CartpoleModel
 from DQN.cartpole_agent import CartpoleAgent
 from DQN.replay_memory import ReplayMemory
 from video_offload import VideoOffloadEnv
+from train_env import TrainEnv
 
 LEARN_FREQ = 5  # update parameters every 5 steps
 MEMORY_SIZE = 20000  # replay memory size
@@ -71,23 +72,31 @@ def run_episode(agent, env, rpm):
 
 def evaluate(agent, env):
     # test part, run 5 episodes and average
-    eval_reward = []
-    for i in range(5):
-        obs = env.reset(1)
-        episode_reward = 0
-        isOver = False
-        while not isOver:
-            action = agent.predict(obs)
-            # logger.info('The action is :{}'.format(action))
-            obs, reward, isOver, _ = env.step(action, 1)
-            episode_reward += reward
-        eval_reward.append(episode_reward)
-    return np.mean(eval_reward)
+    # eval_reward = []
+    # for i in range(5):
+    #     obs = env.reset(1)
+    #     episode_reward = 0
+    #     isOver = False
+    #     while not isOver:
+    #         action = agent.predict(obs)
+    #         obs, reward, isOver, _ = env.step(action, 1)
+    #         episode_reward += reward
+    #     eval_reward.append(episode_reward)
+    # return np.mean(eval_reward)
+
+    obs = env.reset(0)
+    episode_reward = 0
+    isOver = False
+    while not isOver:
+        action = agent.predict(obs)
+        obs, reward, isOver, _ = env.step(action, 0)
+        episode_reward += reward
+    return episode_reward
 
 
 def main():
     # env = gym.make('CartPole-v0')
-    env = VideoOffloadEnv()
+    env = TrainEnv()
     action_dim = env.action_space.n
     obs_shape = env.observation_space.shape
     logger.info('action_dim:{}    obs_shape:{}    obs_shape[0]:{}'.format(action_dim, obs_shape, obs_shape[0]))
@@ -102,14 +111,14 @@ def main():
         algorithm,
         obs_dim=obs_shape[0],
         act_dim=action_dim,
-        e_greed=0.9,  # explore
+        e_greed=0.2,  # explore
         e_greed_decrement=1e-6
     )  # probability of exploring is decreasing during training
 
     while len(rpm) < MEMORY_WARMUP_SIZE:  # warm up replay memory
         run_episode(agent, env, rpm)
 
-    max_episode = 500000
+    max_episode = 5000
 
     # start train
     log_list = []
@@ -118,7 +127,7 @@ def main():
     test_episode=0
     while train_episode < max_episode:
         # train part
-        for i in range(0, 100):
+        for i in range(0, 5):
             total_reward = run_episode(agent, env, rpm)
             train_episode += 1
             log_list.append(str(train_episode)+" "+str(total_reward)+"\n")

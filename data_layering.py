@@ -13,7 +13,7 @@ def SortFile(filename):
 
 def CreateNormalDistribution(filename,mu,sigma,num):
     list = []
-    fo = open("data/layering/"+filename+".txt", "w")
+    fo = open("data/layering/test/"+filename+".txt", "w")
     s = np.random.normal(mu, sigma, num)
     s.sort()
     for index in range(len(s)):
@@ -21,15 +21,15 @@ def CreateNormalDistribution(filename,mu,sigma,num):
 
     fo.writelines(list)
     fo.close()
-    count, bins, ignored = plt.hist(s, 30, density=True, color='b')
-    plt.plot(bins, 1 / (sigma * np.sqrt(2 * np.pi)) * np.exp(- (bins - mu) ** 2 / (2 * sigma ** 2)), linewidth=2,
-             color='r')
-    plt.show()
+    # count, bins, ignored = plt.hist(s, 30, density=True, color='b')
+    # plt.plot(bins, 1 / (sigma * np.sqrt(2 * np.pi)) * np.exp(- (bins - mu) ** 2 / (2 * sigma ** 2)), linewidth=2,
+    #          color='r')
+    # plt.show()
 
 
 def CreateMemCpuNormalDistribution(filename,mu,sigma,num):
     list = []
-    fo = open("data/layering/"+filename+".txt", "w")
+    fo = open("data/layering/test/"+filename+".txt", "w")
     s1 = np.random.normal(mu, sigma, num)
     s2 = np.random.normal(mu, sigma, num)
     s1.sort()
@@ -43,39 +43,43 @@ def CreateMemCpuNormalDistribution(filename,mu,sigma,num):
 
 def AddIndex(filename):
     list = []
-    fo = open("data/rl_data/"+filename+".txt", "r")
+    fo = open("data/layering/test/"+filename+".txt", "r")
     lines = fo.readlines()
     fo.close()
     for index in range(len(lines)):
         line = str(index) + " " + lines[index].strip() + "\n"
         list.append(line)
 
-    fo = open("data/rl_data/"+filename+".txt", "w")
+    fo = open("data/layering/test/"+filename+".txt", "w")
     fo.writelines(list)
     fo.close()
 
 
 def CreatePeopleNumAndConfSum(source,destination):
     list=[]
-    fo = open("data/layering/" + source + ".txt", "r")
+    fo = open("data/layering/test/" + source + ".txt", "r")
     lines = fo.readlines()
     fo.close()
-    for i in range(200):
+    for i in range(470, 570):
         list.append(lines[i].strip()+"\n")
-    fo = open("data/layering/" + destination + ".txt", "w")
+    fo = open("data/layering/test/" + destination + ".txt", "w")
     fo.writelines(list)
     fo.close()
+
+
+def LayeringReward(num):
+    return str(math.ceil(float(num)/0.05))
 
 
 def CreateDataset():
     list1 = []
     list2 = []
-    fo1 = open("data/layering/train_file_size.txt", "r")
-    fo2 = open("data/layering/train_local_peoplenum_confsum.txt", "r")
-    fo3 = open("data/layering/train_local_protime.txt", "r")
-    fo4 = open("data/layering/train_mem_cpu_usage.txt", "r")
-    fo5 = open("data/layering/train_server_peoplenum_confsum.txt", "r")
-    fo6 = open("data/layering/train_server_protime.txt", "r")
+    fo1 = open("data/layering/test/test_file_size.txt", "r")
+    fo2 = open("data/layering/test/test_local_peoplenum_confsum.txt", "r")
+    fo3 = open("data/layering/test/test_local_protime.txt", "r")
+    fo4 = open("data/layering/test/test_mem_cpu_usage.txt", "r")
+    fo5 = open("data/layering/test/test_server_peoplenum_confsum.txt", "r")
+    fo6 = open("data/layering/test/test_server_protime.txt", "r")
     lines1 = fo1.readlines()
     lines2 = fo2.readlines()
     lines3 = fo3.readlines()
@@ -101,28 +105,22 @@ def CreateDataset():
         states5 = lines5[index].strip().split(' ')
         states6 = lines6[index].strip()
 
-        # print(states2[0])
-        # print(states1)
-        # print(states4[0])
-        # print(states4[1])
-        # print(states2[1])
-        # print(states3)
-
-        line1 = states2[0] + ' ' + states1 + ' ' + states4[0] + ' ' + states4[1] + ' ' + states2[1] + ' ' + states3 + '\n'
+        line1 = LayeringReward(states2[0]) + ' ' + LayeringReward(states1) + ' ' + LayeringReward(states4[0]) + ' ' + \
+                LayeringReward(states4[1]) + ' ' + LayeringReward(states2[1]) + ' ' + LayeringReward(states3) + '\n'
         list1.append(line1)
 
-        line2 = states5[0] + ' ' + states5[1] + ' ' + states6 + ' '
+        line2 = LayeringReward(states5[0]) + ' ' + LayeringReward(states5[1]) + ' ' + LayeringReward(states6) + ' '
         time1 = float(states1) * 8388608 / 20000000.0
         time2 = float(states1) * 8388608 / 50000000.0
         time3 = float(states1) * 8388608 / 100000000.0
-        line2 = line2 + str(time1) + ' ' + str(time2) + ' ' + str(time3) + '\n'
+        line2 = line2 + str(math.ceil(time1/0.05)) + ' ' + str(math.ceil(time2/0.05)) + ' ' + str(math.ceil(time3/0.05)) + '\n'
         list2.append(line2)
 
-    fo = open("data/layering/train_local.txt", "w")
+    fo = open("data/layering/test/test_local.txt", "w")
     fo.writelines(list1)
     fo.close()
 
-    fo = open("data/layering/train_server.txt", "w")
+    fo = open("data/layering/test/test_server.txt", "w")
     fo.writelines(list2)
     fo.close()
 
@@ -136,7 +134,15 @@ if __name__ == '__main__':
     # CreateNormalDistribution("train_local_protime", 1.2, 0.1, 200)
     # CreateNormalDistribution("train_server_protime", 6.1, 0.1, 200)
 
-    # CreatePeopleNumAndConfSum("train_local","train_local_peoplenum_confsum")
-    # CreatePeopleNumAndConfSum("train_server", "train_server_peoplenum_confsum")
+    # CreatePeopleNumAndConfSum("test_local","test_local_peoplenum_confsum")
+    # CreatePeopleNumAndConfSum("test_server", "test_server_peoplenum_confsum")
 
-    CreateDataset()
+    # CreateDataset()
+
+    AddIndex("test_local")
+    AddIndex("test_server")
+
+    # CreateNormalDistribution("test_file_size",0.5,0.1,100)
+    # CreateMemCpuNormalDistribution("test_mem_cpu_usage", 0.5, 0.1, 100)
+    # CreateNormalDistribution("test_local_protime", 1.2, 0.1, 100)
+    # CreateNormalDistribution("test_server_protime", 6.1, 0.1, 100)

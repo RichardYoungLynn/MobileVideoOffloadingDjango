@@ -102,7 +102,7 @@ def createLocalDataset():
 
 def createServerDataset():
     list = []
-    # fo1 = open("data/rl_data/train_server.txt", "r")
+    # fo1 = open("data/rl_data/test_server.txt", "r")
     # fo2 = open("data/rl_data/train_local_server_process_time.txt", "r")
     # fo3 = open("data/rl_data/train_file_size.txt", "r")
     # lines1 = fo1.readlines()
@@ -342,8 +342,8 @@ def addIndex(filename):
 
 
 def shuffleDataset():
-    fo1 = open("data/rl_data/train_local.txt", "r")
-    fo2 = open("data/rl_data/train_server.txt", "r")
+    fo1 = open("data/layering/train/train_local2.txt", "r")
+    fo2 = open("data/layering/train/train_server2.txt", "r")
     lines1 = fo1.readlines()
     lines2 = fo2.readlines()
     fo1.close()
@@ -351,17 +351,14 @@ def shuffleDataset():
 
     state = np.random.get_state()
     np.random.shuffle(lines1)
-    print(lines1)
-    print("-----------------------------------------------------------")
-    # result:[6 4 5 3 7 2 0 1 8 9]
+
     np.random.set_state(state)
     np.random.shuffle(lines2)
-    print(lines2)
 
-    fo = open("data/rl_data/train_local.txt", "w")
+    fo = open("data/layering/train/train_local3.txt", "w")
     fo.writelines(lines1)
     fo.close()
-    fo = open("data/rl_data/train_server.txt", "w")
+    fo = open("data/layering/train/train_server3.txt", "w")
     fo.writelines(lines2)
     fo.close()
 
@@ -391,7 +388,7 @@ if __name__ == '__main__':
     # writeBandwidthInfoToDataset()
     # createLocalDataset()
     # createServerDataset()
-    test()
+    # test()
     # createMemoryCPUInfo()
     # writeMemoryCPUInfoToDataset()
     # createLocalPeopleNumNormalDistribution()
@@ -413,7 +410,7 @@ if __name__ == '__main__':
 
     # createDataset()
 
-    # shuffleDataset()
+    shuffleDataset()
     # a = [0,1,2,3,4]
     # b = [10,11,12,13,14]
     # print(a, b)

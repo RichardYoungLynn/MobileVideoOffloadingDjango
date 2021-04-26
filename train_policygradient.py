@@ -24,6 +24,7 @@ from PolicyGradient.model import Model
 from PolicyGradient.algorithm import PolicyGradient  # from parl.algorithms import PolicyGradient
 from video_offload import VideoOffloadEnv
 from parl.utils import logger
+from train_env import TrainEnv
 
 LEARNING_RATE = 1e-3
 
@@ -45,20 +46,16 @@ def run_episode(env, agent):
     return obs_list, action_list, reward_list
 
 
-# 评估 agent, 跑 5 个episode，总reward求平均
 def evaluate(env, agent):
-    eval_reward = []
-    for i in range(5):
-        obs = env.reset(0)
-        episode_reward = 0
-        while True:
-            action = agent.predict(obs)
-            obs, reward, isOver, _ = env.step(action,0)
-            episode_reward += reward
-            if isOver:
-                break
-        eval_reward.append(episode_reward)
-    return np.mean(eval_reward)
+    obs = env.reset(1)
+    episode_reward = 0
+    while True:
+        action = agent.predict(obs)
+        obs, reward, isOver, _ = env.step(action, 1)
+        episode_reward += reward
+        if isOver:
+            break
+    return episode_reward
 
 
 def calc_reward_to_go(reward_list, gamma=1.0):
@@ -71,7 +68,8 @@ def calc_reward_to_go(reward_list, gamma=1.0):
 def main():
     # env = gym.make('CartPole-v0')
     # env = env.unwrapped # Cancel the minimum score limit
-    env = VideoOffloadEnv()
+    # env = VideoOffloadEnv()
+    env = TrainEnv()
     obs_dim = env.observation_space.shape[0]
     act_dim = env.action_space.n
     logger.info('obs_dim {}, act_dim {}'.format(obs_dim, act_dim))
@@ -87,9 +85,9 @@ def main():
     #     run_episode(env, agent, train_or_test='test', render=True)
     #     exit()
 
-    for i in range(100):
+    for i in range(100000):
         obs_list, action_list, reward_list = run_episode(env, agent)
-        if i % 10 == 0:
+        if i % 100 == 0:
             logger.info("Episode {}, Reward Sum {}.".format(
                 i, sum(reward_list)))
 
@@ -98,12 +96,12 @@ def main():
         batch_reward = calc_reward_to_go(reward_list)
 
         agent.learn(batch_obs, batch_action, batch_reward)
-        if (i + 1) % 20 == 0:
+        if (i + 1) % 200 == 0:
             total_reward = evaluate(env, agent)
             logger.info('Test reward: {}'.format(total_reward))
 
     # save the parameters to ./model.ckpt
-    agent.save('./model.ckpt')
+    # agent.save('./model.ckpt')
 
 
 if __name__ == '__main__':
