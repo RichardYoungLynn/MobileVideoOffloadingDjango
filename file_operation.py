@@ -1,11 +1,11 @@
 import math
 import random
 
-local_lines_train=open("data/layering/train/train_local3.txt", "r").readlines()
-server_lines_train=open("data/layering/train/train_server3.txt", "r").readlines()
+local_lines_train=open("data/layering/train/train_local4.txt", "r").readlines()
+server_lines_train=open("data/layering/train/train_server4.txt", "r").readlines()
 
-local_lines_test=open("data/layering/test/test_local.txt","r").readlines()
-server_lines_test=open("data/layering/test/test_server.txt","r").readlines()
+local_lines_test=open("data/layering/test/test_local2.txt","r").readlines()
+server_lines_test=open("data/layering/test/test_server2.txt","r").readlines()
 
 
 def readLocalReward(index,train):
@@ -90,10 +90,6 @@ def TestVideoOffloadEnv():
     print("local = "+str(local)+", server = "+str(server)+", max_reward = "+str(max_reward)+", local_reward_sum = "+str(local_reward_sum)+", server_reward_sum = "+str(server_reward_sum))
 
 
-def LayeringReward(num):
-    return math.ceil(float(num)/0.5)
-
-
 def TestTrainEnv():
     train=1
     train_len=200
@@ -137,9 +133,13 @@ def TestTrainEnv():
     print("local = "+str(local)+", server = "+str(server)+", max_reward = "+str(max_reward)+", local_reward_sum = "+str(local_reward_sum)+", server_reward_sum = "+str(server_reward_sum))
 
 
+def LayeringReward(num):
+    return math.ceil(float(num)/0.1)
+
+
 def TestTrainEnvLayered():
     train=0
-    train_len=200
+    train_len=300
     test_len=100
     if train==0:
         len1=test_len
@@ -155,24 +155,24 @@ def TestTrainEnvLayered():
     for i in range(len1):
         local_people_num = float(readLocalReward(i, train)['local_people_num'])
         local_confidence_sum = float(readLocalReward(i, train)['local_confidence_sum'])
-        local_process_time = float(readLocalReward(i, train)['local_process_time'])
+        local_process_time = LayeringReward(readLocalReward(i, train)['local_process_time'])
         memory_usage = float(readLocalReward(i, train)['memory_usage'])
         cpu_usage = float(readLocalReward(i, train)['cpu_usage'])
-        local_r1 = local_confidence_sum / local_process_time
-        local_r2 = (memory_usage + cpu_usage) * local_process_time * 0.002
+        local_r1 = local_people_num / local_process_time
+        local_r2 = (memory_usage + cpu_usage) * 0.28
         local_reward = local_r1 - local_r2
         local_reward_sum+=local_reward
 
         server_people_num = float(readServerReward(i, train)['server_people_num'])
         server_confidence_sum = float(readServerReward(i, train)['server_confidence_sum'])
-        server_process_time = float(readServerReward(i, train)['server_process_time'])
-        server_transmission_time_selftest = float(readServerReward(i, train)['server_transmission_time_selftest'])
-        server_transmission_time_4g = float(readServerReward(i, train)['server_transmission_time_4g'])
-        server_transmission_time_5g = float(readServerReward(i, train)['server_transmission_time_5g'])
-        server_reward = server_confidence_sum / (server_process_time + server_transmission_time_selftest)
+        server_process_time = LayeringReward(readServerReward(i, train)['server_process_time'])
+        server_transmission_time_selftest = LayeringReward(readServerReward(i, train)['server_transmission_time_selftest'])
+        server_transmission_time_4g = LayeringReward(readServerReward(i, train)['server_transmission_time_4g'])
+        server_transmission_time_5g = LayeringReward(readServerReward(i, train)['server_transmission_time_5g'])
+        server_reward = server_people_num / (server_process_time + server_transmission_time_selftest)
         server_reward_sum+=server_reward
 
-        offload = local_reward<server_reward
+        offload = local_reward < server_reward
         random_policy = random.choice([0, 1])
         random_reward=0
 
@@ -201,6 +201,21 @@ def TestTrainEnvLayered():
     print("random = "+str(random_num)+", local = "+str(local)+", server = "+str(server)+
           ", max_reward = "+str(max_reward)+
           ", random_reward_sum = "+str(random_reward_sum)+", local_reward_sum = "+str(local_reward_sum)+", server_reward_sum = "+str(server_reward_sum))
+
+
+def ParseResult(filename):
+    result_lines = open("data/result/"+filename+".txt", "r").readlines()
+    lines_len = len(result_lines)
+    for index in range(lines_len):
+        results=result_lines[index].strip().split(' ')
+        if results[0]=='Train':
+            pass
+        else:
+            pass
+
+
+def DataAnalytic():
+    pass
 
 
 if __name__ == '__main__':

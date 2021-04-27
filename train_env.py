@@ -1,3 +1,21 @@
+'''
+Observation:
+        Type: Box(2)
+        Num     Observation           Min           Max           Note
+        0	    PeopleNum             0.0           30.0          Discrete
+        1	    FileSize              0.0           1.0           Continuous
+        2       MemoryUsage           0.0           1.0           Continuous
+        3       CpuUsage              0.0           1.0           Continuous
+Actions:
+        Type: Discrete(2)
+        Num	    Action
+        0	    local
+        1	    offload
+Reward:
+        local_reward = local_people_num / local_process_time - (memory_usage + cpu_usage) * 0.28
+        server_reward = server_people_num / server_process_time + server_transmission_time
+'''
+
 from gym import spaces
 from file_operation import readLocalReward, readServerReward
 import numpy as np
@@ -7,14 +25,14 @@ class TrainEnv():
 
     def __init__(self):
         self.action_space = spaces.Discrete(2)
-        self.observation_space = spaces.Box(np.array([0.0, 0.0, 0.0, 0.0]), np.array([300.0, 100.0, 100.0, 100.0]))
+        self.observation_space = spaces.Box(np.array([0.0, 0.0, 0.0, 0.0]), np.array([30.0, 1.0, 1.0, 1.0]))
         self.count = 0
 
 
     def cal_reward(self,offload,action,train):
         done = False
         if train == 1:
-            if (self.count == 199):
+            if (self.count == 299):
                 if action == 0:
                     if offload:
                         reward = 0
@@ -66,21 +84,27 @@ class TrainEnv():
         return done, reward
 
 
+    def LayeringReward(self, num):
+        return math.ceil(float(num) / 0.1)
+
+
     def step(self, action, train):
+        local_people_num = float(readLocalReward(self.count, train)['local_people_num'])
         local_confidence_sum = float(readLocalReward(self.count, train)['local_confidence_sum'])
-        local_process_time = float(readLocalReward(self.count, train)['local_process_time'])
+        local_process_time = self.LayeringReward(readLocalReward(self.count, train)['local_process_time'])
         memory_usage = float(readLocalReward(self.count, train)['memory_usage'])
         cpu_usage = float(readLocalReward(self.count, train)['cpu_usage'])
-        r1 = local_confidence_sum / local_process_time
-        r2 = (memory_usage + cpu_usage) * local_process_time * 0.002
+        r1 = local_people_num / local_process_time
+        r2 = (memory_usage + cpu_usage) * 0.28
         local_reward = r1 - r2
 
+        server_people_num = float(readServerReward(self.count, train)['server_people_num'])
         server_confidence_sum = float(readServerReward(self.count, train)['server_confidence_sum'])
-        server_process_time = float(readServerReward(self.count, train)['server_process_time'])
-        server_transmission_time_selftest = float(readServerReward(self.count, train)['server_transmission_time_selftest'])
-        server_transmission_time_4g = float(readServerReward(self.count, train)['server_transmission_time_4g'])
-        server_transmission_time_5g = float(readServerReward(self.count, train)['server_transmission_time_5g'])
-        server_reward = server_confidence_sum / (server_process_time + server_transmission_time_selftest)
+        server_process_time = self.LayeringReward(readServerReward(self.count, train)['server_process_time'])
+        server_transmission_time_selftest = self.LayeringReward(readServerReward(self.count, train)['server_transmission_time_selftest'])
+        server_transmission_time_4g = self.LayeringReward(readServerReward(self.count, train)['server_transmission_time_4g'])
+        server_transmission_time_5g = self.LayeringReward(readServerReward(self.count, train)['server_transmission_time_5g'])
+        server_reward = server_people_num / (server_process_time + server_transmission_time_selftest)
 
         offload = local_reward < server_reward
 

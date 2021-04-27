@@ -379,10 +379,6 @@ def createTestEnv():
     fo.close()
 
 
-def layering():
-    pass
-
-
 if __name__ == '__main__':
     # createBandwidthInfo()
     # writeBandwidthInfoToDataset()

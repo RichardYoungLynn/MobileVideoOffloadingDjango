@@ -111,8 +111,8 @@ def main():
         algorithm,
         obs_dim=obs_shape[0],
         act_dim=action_dim,
-        e_greed=0.2,  # explore
-        e_greed_decrement=1e-6
+        e_greed=0.3,  # explore
+        e_greed_decrement=1e-7
     )  # probability of exploring is decreasing during training
 
     while len(rpm) < MEMORY_WARMUP_SIZE:  # warm up replay memory
@@ -120,22 +120,19 @@ def main():
 
     max_episode = 5000
 
-    # start train
     log_list = []
     fo = open("log/"+str(math.floor(time.time()*1000.0))+"dqn.txt", "w")
     train_episode = 0
     test_episode=0
     while train_episode < max_episode:
-        # train part
-        for i in range(0, 5):
+        for i in range(0, 10):
             total_reward = run_episode(agent, env, rpm)
             train_episode += 1
-            log_list.append(str(train_episode)+" "+str(total_reward)+"\n")
-            # print(env.record)
-            # logger.info('train_episode:{}    total_reward:{}'.format(train_episode, total_reward))
+            log_list.append("Train "+str(train_episode)+" "+str(total_reward)+"\n")
+            logger.info('train_episode:{}    train_reward:{}'.format(train_episode, total_reward))
 
         eval_reward = evaluate(agent, env)
-        log_list.append("T "+str(test_episode) + " " + str(eval_reward) + "\n")
+        log_list.append("Test "+str(test_episode) + " " + str(eval_reward) + "\n")
         logger.info('test_episode:{}    test_reward:{}'.format(test_episode, eval_reward))
         test_episode+=1
 

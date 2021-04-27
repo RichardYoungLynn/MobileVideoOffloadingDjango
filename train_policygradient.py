@@ -16,6 +16,8 @@
 
 import os
 import gym
+import time
+import math
 import numpy as np
 import parl
 
@@ -47,11 +49,11 @@ def run_episode(env, agent):
 
 
 def evaluate(env, agent):
-    obs = env.reset(1)
+    obs = env.reset(0)
     episode_reward = 0
     while True:
         action = agent.predict(obs)
-        obs, reward, isOver, _ = env.step(action, 1)
+        obs, reward, isOver, _ = env.step(action, 0)
         episode_reward += reward
         if isOver:
             break
@@ -85,20 +87,32 @@ def main():
     #     run_episode(env, agent, train_or_test='test', render=True)
     #     exit()
 
-    for i in range(100000):
-        obs_list, action_list, reward_list = run_episode(env, agent)
-        if i % 100 == 0:
-            logger.info("Episode {}, Reward Sum {}.".format(
-                i, sum(reward_list)))
+    max_episode = 10000
 
-        batch_obs = np.array(obs_list)
-        batch_action = np.array(action_list)
-        batch_reward = calc_reward_to_go(reward_list)
+    log_list = []
+    fo = open("log/" + str(math.floor(time.time() * 1000.0)) + "policygradient.txt", "w")
+    train_episode = 0
+    test_episode = 0
+    while train_episode < max_episode:
+        for i in range(0, 20):
+            obs_list, action_list, reward_list = run_episode(env, agent)
+            log_list.append("Train " + str(train_episode) + " " + str(sum(reward_list)) + "\n")
+            logger.info("train_episode:{}    train_reward:{}.".format(train_episode, sum(reward_list)))
 
-        agent.learn(batch_obs, batch_action, batch_reward)
-        if (i + 1) % 200 == 0:
-            total_reward = evaluate(env, agent)
-            logger.info('Test reward: {}'.format(total_reward))
+            batch_obs = np.array(obs_list)
+            batch_action = np.array(action_list)
+            batch_reward = calc_reward_to_go(reward_list)
+
+            agent.learn(batch_obs, batch_action, batch_reward)
+            train_episode += 1
+
+        total_reward = evaluate(env, agent)
+        log_list.append("Test " + str(test_episode) + " " + str(total_reward) + "\n")
+        logger.info('test_episode:{}    test_reward:{}'.format(test_episode, total_reward))
+        test_episode += 1
+
+    fo.writelines(log_list)
+    fo.close()
 
     # save the parameters to ./model.ckpt
     # agent.save('./model.ckpt')
