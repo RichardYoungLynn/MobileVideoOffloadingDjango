@@ -203,21 +203,6 @@ def TestTrainEnvLayered():
           ", random_reward_sum = "+str(random_reward_sum)+", local_reward_sum = "+str(local_reward_sum)+", server_reward_sum = "+str(server_reward_sum))
 
 
-def ParseResult(filename):
-    result_lines = open("data/result/"+filename+".txt", "r").readlines()
-    lines_len = len(result_lines)
-    for index in range(lines_len):
-        results=result_lines[index].strip().split(' ')
-        if results[0]=='Train':
-            pass
-        else:
-            pass
-
-
-def DataAnalytic():
-    pass
-
-
 if __name__ == '__main__':
     # print(readLocalReward(0,1))
     # print(readLocalReward(0,0))

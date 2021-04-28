@@ -82,19 +82,19 @@ def main():
     agent = Agent(alg, obs_dim=obs_dim, act_dim=act_dim)
 
     # 加载模型
-    # if os.path.exists('./model.ckpt'):
-    #     agent.restore('./model.ckpt')
-    #     run_episode(env, agent, train_or_test='test', render=True)
-    #     exit()
+    if os.path.exists('./policygradient_model'):
+        agent.restore('./policygradient_model')
+        print("加载模型成功，开始预测：")
+        evaluate(env, agent)
 
-    max_episode = 10000
+    max_episode = 20000
 
     log_list = []
     fo = open("log/" + str(math.floor(time.time() * 1000.0)) + "policygradient.txt", "w")
     train_episode = 0
     test_episode = 0
     while train_episode < max_episode:
-        for i in range(0, 20):
+        for i in range(0, 10):
             obs_list, action_list, reward_list = run_episode(env, agent)
             log_list.append("Train " + str(train_episode) + " " + str(sum(reward_list)) + "\n")
             logger.info("train_episode:{}    train_reward:{}.".format(train_episode, sum(reward_list)))
@@ -114,8 +114,8 @@ def main():
     fo.writelines(log_list)
     fo.close()
 
-    # save the parameters to ./model.ckpt
-    # agent.save('./model.ckpt')
+    # save the parameters to ./policygradient_model
+    agent.save('./policygradient_model')
 
 
 if __name__ == '__main__':
