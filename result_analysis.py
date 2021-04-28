@@ -129,7 +129,7 @@ def CreateFile():
         test_server_peoplenum = lines2[index].strip().split(' ')[0]
         list.append(test_local_peoplenum + ' ' + test_server_peoplenum + '\n')
 
-    fo = open("data/layering/analysis/test_local_server_peoplenum.txt", "w")
+    fo = open("data/layering/analysis/local_people_num_analysis/local_server_peoplenum.txt", "w")
     fo.writelines(list)
     fo.close()
 
@@ -189,7 +189,7 @@ def SortFile(filename):
 #         test_server_peoplenum = lines2[index].strip().split(' ')[0]
 #         list.append(test_local_peoplenum + ' ' + test_server_peoplenum + '\n')
 #
-#     fo = open("data/layering/analysis/test_local_server_peoplenum.txt", "w")
+#     fo = open("data/layering/analysis/local_server_peoplenum.txt", "w")
 #     fo.writelines(list)
 #     fo.close()
 
@@ -198,8 +198,108 @@ def MemCpuUsageAnalysis():
     pass
 
 
-def CreateLocalPeopleNumAnalysis():
+def CreateNormalDistribution(filename, mu, sigma, num):
+    list = []
+    fo = open("data/layering/analysis/" + filename + ".txt", "w")
+    s = np.random.normal(mu, sigma, num)
+    s.sort()
+    for index in range(len(s)):
+        list.append(str(s[index]) + "\n")
 
+    fo.writelines(list)
+    fo.close()
+    count, bins, ignored = plt.hist(s, 30, density=True, color='b')
+    plt.plot(bins, 1 / (sigma * np.sqrt(2 * np.pi)) * np.exp(- (bins - mu) ** 2 / (2 * sigma ** 2)), linewidth=2,
+             color='r')
+    plt.show()
+
+
+def CreateMemCpuNormalDistribution(filename, mu, sigma, num):
+    list = []
+    fo = open("data/layering/analysis/" + filename + ".txt", "w")
+    s1 = np.random.normal(mu, sigma, num)
+    s2 = np.random.normal(mu, sigma, num)
+    s1.sort()
+    s2.sort()
+    for index in range(len(s1)):
+        list.append(str(s1[index]) + " " + str(s2[index]) + "\n")
+
+    fo.writelines(list)
+    fo.close()
+
+
+def CreateDataset(analysis_type):
+    list1 = []
+    list2 = []
+    fo1 = open("data/layering/analysis/"+analysis_type+"/file_size.txt", "r")
+    fo2 = open("data/layering/analysis/"+analysis_type+"/local_server_peoplenum.txt", "r")
+    fo3 = open("data/layering/analysis/"+analysis_type+"/local_protime.txt", "r")
+    fo4 = open("data/layering/analysis/"+analysis_type+"/mem_cpu_usage.txt", "r")
+    fo5 = open("data/layering/analysis/"+analysis_type+"/server_protime.txt", "r")
+    lines1 = fo1.readlines()
+    lines2 = fo2.readlines()
+    lines3 = fo3.readlines()
+    lines4 = fo4.readlines()
+    lines5 = fo5.readlines()
+    fo1.close()
+    fo2.close()
+    fo3.close()
+    fo4.close()
+    fo5.close()
+    random.shuffle(lines1)
+    random.shuffle(lines3)
+    # random.shuffle(lines4)
+    random.shuffle(lines5)
+    len1 = len(lines1)
+    for index in range(len1):
+        states1 = lines1[index].strip()
+        states2 = lines2[index].strip().split(' ')
+        states3 = lines3[index].strip()
+        states4 = lines4[index].strip().split(' ')
+        states5 = lines5[index].strip()
+
+        line1 = states2[1] + ' ' + states1 + ' ' + states4[0] + ' ' + \
+                states4[1] + ' ' + states3 + '\n'
+        list1.append(line1)
+
+        line2 = states2[2] + ' ' + states5[0] + ' '
+        time1 = float(states1) * 8388608 / 20000000.0
+        time2 = float(states1) * 8388608 / 50000000.0
+        time3 = float(states1) * 8388608 / 100000000.0
+        line2 = line2 + str(time1) + ' ' + str(time2) + ' ' + str(time3) + '\n'
+        list2.append(line2)
+
+    fo = open("data/layering/analysis/"+analysis_type+"/local.txt", "w")
+    fo.writelines(list1)
+    fo.close()
+
+    fo = open("data/layering/analysis/"+analysis_type+"/server.txt", "w")
+    fo.writelines(list2)
+    fo.close()
+
+
+def CalAvgLocalServerPeopleNum():
+    list = []
+    local_sum = 0
+    server_sum = 0
+    fo = open("data/layering/analysis/local_people_num_analysis/local_server_peoplenum.txt", "r")
+    lines = fo.readlines()
+    fo.close()
+    for index in range(len(lines)):
+        local_people_num = lines[index].strip().split(' ')[1]
+        server_people_num = lines[index].strip().split(' ')[2]
+        local_sum += float(local_people_num)
+        server_sum += float(server_people_num)
+
+    local_avg = round(local_sum / 100.0)
+    server_avg = round(server_sum / 100.0)
+
+    for index in range(len(lines)):
+        list.append(str(index) + ' ' + str(local_avg) + ' ' + str(server_avg) + '\n')
+
+    fo = open("data/layering/analysis/file_size_analysis/local_server_peoplenum.txt", "w")
+    fo.writelines(list)
+    fo.close()
 
 
 if __name__ == '__main__':
@@ -208,4 +308,15 @@ if __name__ == '__main__':
     # AddIndex("test_local_server_peoplenum")
     # SortFile("test_local_server_peoplenum")
     # CreateFile()
-    ParseResult("1619537109013policygradient")
+    # ParseResult("1619537109013policygradient")
+
+    # CreateNormalDistribution("local_people_num_analysis/file_size", 0.5, 0.005, 100)
+    # CreateMemCpuNormalDistribution("local_people_num_analysis/mem_cpu_usage", 0.5, 0.005, 100)
+    # CreateNormalDistribution("local_people_num_analysis/local_protime", 1.2, 0.005, 100)
+    # CreateNormalDistribution("local_people_num_analysis/server_protime", 6.1, 0.005, 100)
+    # CreateDataset("local_people_num_analysis")
+
+    # CalAvgLocalServerPeopleNum()
+    # CreateDataset("file_size_analysis")
+
+    CreateDataset("mem_cpu_usage_analysis")
