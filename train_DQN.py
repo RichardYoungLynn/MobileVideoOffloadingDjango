@@ -26,7 +26,6 @@ from parl.utils import logger
 from DQN.cartpole_model import CartpoleModel
 from DQN.cartpole_agent import CartpoleAgent
 from DQN.replay_memory import ReplayMemory
-from video_offload import VideoOffloadEnv
 from train_env import TrainEnv
 
 LEARN_FREQ = 5  # update parameters every 5 steps
@@ -120,12 +119,12 @@ def main():
         run_episode(agent, env, rpm)
 
     # 加载模型
-    if os.path.exists('./dqn_model'):
+    if os.path.exists('dqn_model'):
         agent.restore('./dqn_model')
         print("加载模型成功，开始预测：")
         evaluate(agent, env)
 
-    max_episode = 10000
+    max_episode = 15000
 
     log_list = []
     fo = open("log/"+str(math.floor(time.time()*1000.0))+"dqn.txt", "w")
@@ -146,7 +145,7 @@ def main():
     fo.writelines(log_list)
     fo.close()
 
-    # save the parameters to ./dqn_model
+    # save the parameters to ./dqn_models
     agent.save('./dqn_model')
 
 

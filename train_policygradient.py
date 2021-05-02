@@ -24,7 +24,6 @@ import parl
 from PolicyGradient.agent import Agent
 from PolicyGradient.model import Model
 from PolicyGradient.algorithm import PolicyGradient  # from parl.algorithms import PolicyGradient
-from video_offload import VideoOffloadEnv
 from parl.utils import logger
 from train_env import TrainEnv
 

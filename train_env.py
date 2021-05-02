@@ -12,7 +12,7 @@ Actions:
         0	    local
         1	    offload
 Reward:
-        local_reward = local_people_num / local_process_time - (memory_usage + cpu_usage) * 0.28
+        local_reward = local_people_num / local_process_time - math.exp(memory_usage + cpu_usage)
         server_reward = server_people_num / server_process_time + server_transmission_time
 '''
 
@@ -90,20 +90,18 @@ class TrainEnv():
 
     def step(self, action, train):
         local_people_num = float(readLocalReward(self.count, train)['local_people_num'])
-        local_confidence_sum = float(readLocalReward(self.count, train)['local_confidence_sum'])
-        local_process_time = self.LayeringReward(readLocalReward(self.count, train)['local_process_time'])
+        local_process_time = float(readLocalReward(self.count, train)['local_process_time'])
         memory_usage = float(readLocalReward(self.count, train)['memory_usage'])
         cpu_usage = float(readLocalReward(self.count, train)['cpu_usage'])
         r1 = local_people_num / local_process_time
-        r2 = (memory_usage + cpu_usage) * 0.28
+        r2 = math.exp(memory_usage + cpu_usage)
         local_reward = r1 - r2
 
         server_people_num = float(readServerReward(self.count, train)['server_people_num'])
-        server_confidence_sum = float(readServerReward(self.count, train)['server_confidence_sum'])
-        server_process_time = self.LayeringReward(readServerReward(self.count, train)['server_process_time'])
-        server_transmission_time_selftest = self.LayeringReward(readServerReward(self.count, train)['server_transmission_time_selftest'])
-        server_transmission_time_4g = self.LayeringReward(readServerReward(self.count, train)['server_transmission_time_4g'])
-        server_transmission_time_5g = self.LayeringReward(readServerReward(self.count, train)['server_transmission_time_5g'])
+        server_process_time = float(readServerReward(self.count, train)['server_process_time'])
+        server_transmission_time_selftest = float(readServerReward(self.count, train)['server_transmission_time_selftest'])
+        server_transmission_time_4g = float(readServerReward(self.count, train)['server_transmission_time_4g'])
+        server_transmission_time_5g = float(readServerReward(self.count, train)['server_transmission_time_5g'])
         server_reward = server_people_num / (server_process_time + server_transmission_time_selftest)
 
         offload = local_reward < server_reward

@@ -163,6 +163,16 @@ def TestTrainEnvLayered():
         local_reward = local_r1 - local_r2
         local_reward_sum+=local_reward
 
+        # local_people_num = float(readLocalReward(i, train)['local_people_num'])
+        # local_confidence_sum = float(readLocalReward(i, train)['local_confidence_sum'])
+        # local_process_time = float(readLocalReward(i, train)['local_process_time'])
+        # memory_usage = float(readLocalReward(i, train)['memory_usage'])
+        # cpu_usage = float(readLocalReward(i, train)['cpu_usage'])
+        # local_r1 = local_people_num / local_process_time
+        # local_r2 = math.exp(memory_usage + cpu_usage)
+        # local_reward = local_r1 - local_r2
+        # local_reward_sum += local_reward
+
         server_people_num = float(readServerReward(i, train)['server_people_num'])
         server_confidence_sum = float(readServerReward(i, train)['server_confidence_sum'])
         server_process_time = LayeringReward(readServerReward(i, train)['server_process_time'])
