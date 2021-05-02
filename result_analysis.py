@@ -7,15 +7,15 @@ import math
 import matplotlib
 import matplotlib.pyplot as plt
 
-# import parl
-# from parl.utils import logger
-# from DQN.cartpole_model import CartpoleModel
-# from DQN.cartpole_agent import CartpoleAgent
-# from DQN.replay_memory import ReplayMemory
-# from PolicyGradient.agent import Agent
-# from PolicyGradient.model import Model
-# from PolicyGradient.algorithm import PolicyGradient  # from parl.algorithms import PolicyGradient
-# from analysis_env import AnalysisEnv
+import parl
+from parl.utils import logger
+from DQN.cartpole_model import CartpoleModel
+from DQN.cartpole_agent import CartpoleAgent
+from DQN.replay_memory import ReplayMemory
+from PolicyGradient.agent import Agent
+from PolicyGradient.model import Model
+from PolicyGradient.algorithm import PolicyGradient  # from parl.algorithms import PolicyGradient
+from analysis_env import AnalysisEnv
 
 LEARN_FREQ = 5  # update parameters every 5 steps
 MEMORY_SIZE = 20000  # replay memory size
@@ -239,9 +239,9 @@ def CreateDataset(analysis_type):
     fo3.close()
     fo4.close()
     fo5.close()
-    # random.shuffle(lines1)
+    random.shuffle(lines1)
     random.shuffle(lines3)
-    random.shuffle(lines4)
+    # random.shuffle(lines4)
     random.shuffle(lines5)
     len1 = len(lines1)
     for index in range(len1):
@@ -297,81 +297,81 @@ def CalAvgLocalServerPeopleNum():
 
 def ChangeLocalServerPeopleNum():
     list = []
-    fo = open("data/layering/analysis/file_size_analysis/local_server_peoplenum.txt", "w")
+    fo = open("data/layering/analysis/mem_cpu_usage_analysis/local_server_peoplenum.txt", "w")
 
     for index in range(100):
-        list.append(str(index) + ' ' + str(5) + ' ' + str(12) + '\n')
+        list.append(str(index) + ' ' + str(5) + ' ' + str(9) + '\n')
 
     fo.writelines(list)
     fo.close()
 
 
-# def evaluate(agent, env, type):
-#     obs = env.reset(type)
-#     evaluate_reward_list = []
-#     local_reward_list = []
-#     server_reward_list = []
-#     isOver = False
-#     while not isOver:
-#         action = agent.predict(obs)
-#         obs, evaluate_reward, local_reward, server_reward, isOver, _ = env.step(action)
-#         evaluate_reward_list.append(evaluate_reward)
-#         local_reward_list.append(local_reward)
-#         server_reward_list.append(server_reward)
-#     return evaluate_reward_list, local_reward_list, server_reward_list
-#
-#
-# def SingleStatusAnalysis(type):
-#     env = AnalysisEnv(type)
-#     action_dim = env.action_space.n
-#     obs_shape = env.observation_space.shape
-#
-#     model = CartpoleModel(act_dim=action_dim)
-#     algorithm = parl.algorithms.DQN(
-#         model, act_dim=action_dim, gamma=GAMMA, lr=LEARNING_RATE)
-#     agent = CartpoleAgent(
-#         algorithm,
-#         obs_dim=obs_shape[0],
-#         act_dim=action_dim,
-#         e_greed=0.2,
-#         e_greed_decrement=1e-8
-#     )
-#
-#     if os.path.exists('./dqn_models/dqn_model4'):
-#         agent.restore('./dqn_models/dqn_model4')
-#         print("DQN加载模型成功，开始预测：")
-#
-#     # env = AnalysisEnv(type)
-#     # obs_dim = env.observation_space.shape[0]
-#     # act_dim = env.action_space.n
-#     # logger.info('obs_dim {}, act_dim {}'.format(obs_dim, act_dim))
-#     #
-#     # model = Model(act_dim=act_dim)
-#     # alg = PolicyGradient(model, lr=LEARNING_RATE)
-#     # agent = Agent(alg, obs_dim=obs_dim, act_dim=act_dim)
-#     #
-#     # if os.path.exists('./policygradient_models/policygradient_model3'):
-#     #     agent.restore('./policygradient_models/policygradient_model3')
-#     #     print("policy gradient加载模型成功，开始预测：")
-#
-#     evaluate_reward_list, local_reward_list, server_reward_list = evaluate(agent, env, type)
-#
-#     print("预测结束")
-#
-#     x_np = np.arange(100)
-#     evaluate_np = np.asarray(evaluate_reward_list)
-#     local_np = np.asarray(local_reward_list)
-#     server_np = np.asarray(server_reward_list)
-#
-#     plt.title("Analysis result")
-#     plt.xlabel("frame index")
-#     plt.ylabel("reward")
-#     plt.plot(x_np, evaluate_np, color="red")
-#     plt.plot(x_np, local_np, color="yellow")
-#     plt.plot(x_np, server_np, color="blue")
-#     plt.legend(('evaluate', 'local', 'server'), loc='upper left')
-#     plt.savefig(fname="data/layering/analysis/"+type+"/analysis_result.png")
-#     # plt.show()
+def evaluate(agent, env, type):
+    obs = env.reset(type)
+    evaluate_reward_list = []
+    local_reward_list = []
+    server_reward_list = []
+    isOver = False
+    while not isOver:
+        action = agent.predict(obs)
+        obs, evaluate_reward, local_reward, server_reward, isOver, _ = env.step(action)
+        evaluate_reward_list.append(evaluate_reward)
+        local_reward_list.append(local_reward)
+        server_reward_list.append(server_reward)
+    return evaluate_reward_list, local_reward_list, server_reward_list
+
+
+def SingleStatusAnalysis(type):
+    # env = AnalysisEnv(type)
+    # action_dim = env.action_space.n
+    # obs_shape = env.observation_space.shape
+    #
+    # model = CartpoleModel(act_dim=action_dim)
+    # algorithm = parl.algorithms.DQN(
+    #     model, act_dim=action_dim, gamma=GAMMA, lr=LEARNING_RATE)
+    # agent = CartpoleAgent(
+    #     algorithm,
+    #     obs_dim=obs_shape[0],
+    #     act_dim=action_dim,
+    #     e_greed=0.2,
+    #     e_greed_decrement=1e-8
+    # )
+    #
+    # if os.path.exists('./dqn_models/dqn_model4'):
+    #     agent.restore('./dqn_models/dqn_model4')
+    #     print("DQN加载模型成功，开始预测：")
+
+    env = AnalysisEnv(type)
+    obs_dim = env.observation_space.shape[0]
+    act_dim = env.action_space.n
+    logger.info('obs_dim {}, act_dim {}'.format(obs_dim, act_dim))
+
+    model = Model(act_dim=act_dim)
+    alg = PolicyGradient(model, lr=LEARNING_RATE)
+    agent = Agent(alg, obs_dim=obs_dim, act_dim=act_dim)
+
+    if os.path.exists('./policygradient_models/policygradient_model3'):
+        agent.restore('./policygradient_models/policygradient_model3')
+        print("policy gradient加载模型成功，开始预测：")
+
+    evaluate_reward_list, local_reward_list, server_reward_list = evaluate(agent, env, type)
+
+    print("预测结束")
+
+    x_np = np.arange(100)
+    evaluate_np = np.asarray(evaluate_reward_list)
+    local_np = np.asarray(local_reward_list)
+    server_np = np.asarray(server_reward_list)
+
+    plt.title("Analysis result")
+    plt.xlabel("frame index")
+    plt.ylabel("reward")
+    plt.plot(x_np, evaluate_np, color="red")
+    plt.plot(x_np, local_np, color="yellow")
+    plt.plot(x_np, server_np, color="blue")
+    plt.legend(('evaluate', 'local', 'server'), loc='upper left')
+    plt.savefig(fname="data/layering/analysis/"+type+"/analysis_result.png")
+    # plt.show()
 
 
 if __name__ == '__main__':
@@ -390,17 +390,23 @@ if __name__ == '__main__':
     # CreateDataset("local_people_num_analysis")
 
     # CalAvgLocalServerPeopleNum()
-    # CreateNormalDistribution("file_size_analysis/file_size", 0.5, 0.25, 100)
-    # CreateNormalDistribution("file_size_analysis/local_protime", 1.2, 0.0001, 100)
-    # CreateNormalDistribution("file_size_analysis/server_protime", 6.1, 0.0001, 100)
-    # CreateMemCpuNormalDistribution("file_size_analysis/mem_cpu_usage", 0.5, 0.0001, 100)
+    # CreateNormalDistribution("file_size_analysis/file_size", 10, 2, 100)
+    # CreateNormalDistribution("file_size_analysis/local_protime", 1.2, 0.00001, 100)
+    # CreateNormalDistribution("file_size_analysis/server_protime", 6.1, 0.00001, 100)
+    # CreateMemCpuNormalDistribution("file_size_analysis/mem_cpu_usage", 0.5, 0.00001, 100)
     # CreateDataset("file_size_analysis")
+
+    # CreateNormalDistribution("mem_cpu_usage_analysis/file_size", 0.5, 0.0001, 100)
+    # CreateMemCpuNormalDistribution("mem_cpu_usage_analysis/mem_cpu_usage", 0.5, 0.2, 100)
+    # CreateNormalDistribution("mem_cpu_usage_analysis/local_protime", 1.2, 0.0001, 100)
+    # CreateNormalDistribution("mem_cpu_usage_analysis/server_protime", 6.1, 0.0001, 100)
+    # CreateDataset("mem_cpu_usage_analysis")
 
     # SingleStatusAnalysis("file_size_analysis")
     # SingleStatusAnalysis("local_people_num_analysis")
-    # SingleStatusAnalysis("mem_cpu_usage_analysis")
+    SingleStatusAnalysis("mem_cpu_usage_analysis")
 
-    ChangeLocalServerPeopleNum()
+    # ChangeLocalServerPeopleNum()
     # CreateDataset("file_size_analysis")
 
 
