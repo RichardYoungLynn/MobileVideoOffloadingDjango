@@ -239,9 +239,9 @@ def CreateDataset(analysis_type):
     fo3.close()
     fo4.close()
     fo5.close()
-    random.shuffle(lines1)
+    # random.shuffle(lines1)
     random.shuffle(lines3)
-    # random.shuffle(lines4)
+    random.shuffle(lines4)
     random.shuffle(lines5)
     len1 = len(lines1)
     for index in range(len1):
@@ -297,10 +297,10 @@ def CalAvgLocalServerPeopleNum():
 
 def ChangeLocalServerPeopleNum():
     list = []
-    fo = open("data/layering/analysis/mem_cpu_usage_analysis/local_server_peoplenum.txt", "w")
+    fo = open("data/layering/analysis/file_size_analysis/local_server_peoplenum.txt", "w")
 
     for index in range(100):
-        list.append(str(index) + ' ' + str(5) + ' ' + str(9) + '\n')
+        list.append(str(index) + ' ' + str(7) + ' ' + str(13) + '\n')
 
     fo.writelines(list)
     fo.close()
@@ -366,10 +366,10 @@ def SingleStatusAnalysis(type):
     plt.title("Analysis result")
     plt.xlabel("frame index")
     plt.ylabel("reward")
-    plt.plot(x_np, evaluate_np, color="red")
-    plt.plot(x_np, local_np, color="yellow")
+    plt.plot(x_np, local_np, color="red")
     plt.plot(x_np, server_np, color="blue")
-    plt.legend(('evaluate', 'local', 'server'), loc='upper left')
+    plt.plot(x_np, evaluate_np, color="black")
+    plt.legend(('local', 'server', 'evaluate'), loc='best')
     plt.savefig(fname="data/layering/analysis/"+type+"/analysis_result.png")
     # plt.show()
 
@@ -390,10 +390,10 @@ if __name__ == '__main__':
     # CreateDataset("local_people_num_analysis")
 
     # CalAvgLocalServerPeopleNum()
-    # CreateNormalDistribution("file_size_analysis/file_size", 10, 2, 100)
+    # CreateNormalDistribution("file_size_analysis/file_size", 1, 0.5, 100)
     # CreateNormalDistribution("file_size_analysis/local_protime", 1.2, 0.00001, 100)
     # CreateNormalDistribution("file_size_analysis/server_protime", 6.1, 0.00001, 100)
-    # CreateMemCpuNormalDistribution("file_size_analysis/mem_cpu_usage", 0.5, 0.00001, 100)
+    # CreateMemCpuNormalDistribution("file_size_analysis/mem_cpu_usage", 0.675, 0.00001, 100)
     # CreateDataset("file_size_analysis")
 
     # CreateNormalDistribution("mem_cpu_usage_analysis/file_size", 0.5, 0.0001, 100)
@@ -402,9 +402,9 @@ if __name__ == '__main__':
     # CreateNormalDistribution("mem_cpu_usage_analysis/server_protime", 6.1, 0.0001, 100)
     # CreateDataset("mem_cpu_usage_analysis")
 
-    # SingleStatusAnalysis("file_size_analysis")
+    SingleStatusAnalysis("file_size_analysis")
     # SingleStatusAnalysis("local_people_num_analysis")
-    SingleStatusAnalysis("mem_cpu_usage_analysis")
+    # SingleStatusAnalysis("mem_cpu_usage_analysis")
 
     # ChangeLocalServerPeopleNum()
     # CreateDataset("file_size_analysis")

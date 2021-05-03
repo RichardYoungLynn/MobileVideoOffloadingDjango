@@ -12,7 +12,7 @@ Actions:
         0	    local
         1	    offload
 Reward:
-        local_reward = local_people_num / local_process_time - math.exp(memory_usage + cpu_usage)
+        local_reward = (local_people_num / local_process_time) - math.exp(memory_usage + cpu_usage)
         server_reward = server_people_num / (server_process_time + server_transmission_time)
 '''
 
