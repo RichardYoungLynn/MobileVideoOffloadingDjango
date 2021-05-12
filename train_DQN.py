@@ -99,7 +99,7 @@ def main():
     env = TrainEnv()
     action_dim = env.action_space.n
     obs_shape = env.observation_space.shape
-    logger.info('action_dim:{}    obs_shape:{}    obs_shape[0]:{}'.format(action_dim, obs_shape, obs_shape[0]))
+    # logger.info('action_dim:{}    obs_shape:{}    obs_shape[0]:{}'.format(action_dim, obs_shape, obs_shape[0]))
     # just like action_dim:2    obs_shape:(4,)    obs_shape[0]:4
 
     rpm = ReplayMemory(MEMORY_SIZE)
@@ -147,6 +147,7 @@ def main():
 
     # save the parameters to ./dqn_models
     agent.save('./dqn_model')
+    print("模型保存成功")
 
 
 if __name__ == '__main__':

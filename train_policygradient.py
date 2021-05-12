@@ -115,6 +115,7 @@ def main():
 
     # save the parameters to ./policygradient_model
     agent.save('./policygradient_model')
+    print("模型保存成功")
 
 
 if __name__ == '__main__':

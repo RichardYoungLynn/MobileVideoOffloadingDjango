@@ -2,6 +2,8 @@ import random
 import math
 import numpy as np
 import matplotlib.pyplot as plt
+import os
+import shutil
 
 def createBandwidthInfo():
     num = 232
@@ -379,6 +381,16 @@ def createTestEnv():
     fo.close()
 
 
+def sampleDataFromDataset():
+    src_dir="D:\\TestImages\\"
+    dist_dir="D:\\PartTestImages"
+    images=os.listdir(src_dir)
+    images=random.sample(images,250)
+    for image in images:
+        print(image)
+        shutil.copy(src_dir+image,dist_dir)
+
+
 if __name__ == '__main__':
     # createBandwidthInfo()
     # writeBandwidthInfoToDataset()
@@ -406,7 +418,7 @@ if __name__ == '__main__':
 
     # createDataset()
 
-    shuffleDataset()
+    # shuffleDataset()
     # a = [0,1,2,3,4]
     # b = [10,11,12,13,14]
     # print(a, b)
@@ -419,3 +431,5 @@ if __name__ == '__main__':
     # np.random.shuffle(b)
     # print(b)
     # result:[16 14 15 13 17 12 10 11 18 19]
+
+    sampleDataFromDataset()

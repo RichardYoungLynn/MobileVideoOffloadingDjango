@@ -13,7 +13,7 @@ def SortFile(filename):
 
 def CreateNormalDistribution(filename,mu,sigma,num):
     list = []
-    fo = open("data/analytic/"+filename+".txt", "w")
+    fo = open("data/test/"+filename+".txt", "w")
     s = np.random.normal(mu, sigma, num)
     s.sort()
     for index in range(len(s)):
@@ -21,15 +21,15 @@ def CreateNormalDistribution(filename,mu,sigma,num):
 
     fo.writelines(list)
     fo.close()
-    count, bins, ignored = plt.hist(s, 30, density=True, color='b')
-    plt.plot(bins, 1 / (sigma * np.sqrt(2 * np.pi)) * np.exp(- (bins - mu) ** 2 / (2 * sigma ** 2)), linewidth=2,
-             color='r')
-    plt.show()
+    # count, bins, ignored = plt.hist(s, 30, density=True, color='b')
+    # plt.plot(bins, 1 / (sigma * np.sqrt(2 * np.pi)) * np.exp(- (bins - mu) ** 2 / (2 * sigma ** 2)), linewidth=2,
+    #          color='r')
+    # plt.show()
 
 
 def CreateMemCpuNormalDistribution(filename,mu,sigma,num):
     list = []
-    fo = open("data/layering/test/"+filename+".txt", "w")
+    fo = open("data/test/"+filename+".txt", "w")
     s1 = np.random.normal(mu, sigma, num)
     s2 = np.random.normal(mu, sigma, num)
     s1.sort()
@@ -39,18 +39,22 @@ def CreateMemCpuNormalDistribution(filename,mu,sigma,num):
 
     fo.writelines(list)
     fo.close()
+    # count, bins, ignored = plt.hist(s1, 30, density=True, color='b')
+    # plt.plot(bins, 1 / (sigma * np.sqrt(2 * np.pi)) * np.exp(- (bins - mu) ** 2 / (2 * sigma ** 2)), linewidth=2,
+    #          color='r')
+    # plt.show()
 
 
 def AddIndex(filename):
     list = []
-    fo = open("data/layering/train/"+filename+".txt", "r")
+    fo = open("data/test/"+filename+".txt", "r")
     lines = fo.readlines()
     fo.close()
     for index in range(len(lines)):
         line = str(index) + " " + lines[index].strip() + "\n"
         list.append(line)
 
-    fo = open("data/layering/train/"+filename+".txt", "w")
+    fo = open("data/test/"+filename+".txt", "w")
     fo.writelines(list)
     fo.close()
 
@@ -74,12 +78,12 @@ def LayeringReward(num):
 def CreateDataset():
     list1 = []
     list2 = []
-    fo1 = open("data/layering/test/test_file_size.txt", "r")
-    fo2 = open("data/layering/test/test_local_peoplenum_confsum.txt", "r")
-    fo3 = open("data/layering/test/test_local_protime.txt", "r")
-    fo4 = open("data/layering/test/test_mem_cpu_usage.txt", "r")
-    fo5 = open("data/layering/test/test_server_peoplenum_confsum.txt", "r")
-    fo6 = open("data/layering/test/test_server_protime.txt", "r")
+    fo1 = open("data/test/file_size.txt", "r")
+    fo2 = open("data/test/local_peoplenum_confsum.txt", "r")
+    fo3 = open("data/test/local_protime.txt", "r")
+    fo4 = open("data/test/mem_cpu_usage.txt", "r")
+    fo5 = open("data/test/server_peoplenum_confsum.txt", "r")
+    fo6 = open("data/test/server_protime.txt", "r")
     lines1 = fo1.readlines()
     lines2 = fo2.readlines()
     lines3 = fo3.readlines()
@@ -116,11 +120,11 @@ def CreateDataset():
         line2 = line2 + str(time1) + ' ' + str(time2) + ' ' + str(time3) + '\n'
         list2.append(line2)
 
-    fo = open("data/layering/test/test_local2.txt", "w")
+    fo = open("data/test/test_local.txt", "w")
     fo.writelines(list1)
     fo.close()
 
-    fo = open("data/layering/test/test_server2.txt", "w")
+    fo = open("data/test/test_server.txt", "w")
     fo.writelines(list2)
     fo.close()
 
@@ -128,18 +132,26 @@ def CreateDataset():
 if __name__ == '__main__':
     # SortFile("train_file_size")
 
-    # CreateNormalDistribution("file_size",0.5,0.2,20)
-    # CreateMemCpuNormalDistribution("test_mem_cpu_usage", 0.5, 0.05, 100)
-    # CreateNormalDistribution("test_local_protime", 1.2, 0.05, 100)
-    # CreateNormalDistribution("test_server_protime", 6.1, 0.05, 100)
+    # CreateNormalDistribution("file_size",0.5,0.1,600)
+    # CreateMemCpuNormalDistribution("mem_cpu_usage", 0.5, 0.1, 600)
+    # CreateNormalDistribution("local_protime", 1.2, 0.1, 600)
+    # CreateNormalDistribution("server_protime", 6.1, 0.1, 600)
+
+    CreateNormalDistribution("file_size", 0.5, 0.1, 200)
+    CreateMemCpuNormalDistribution("mem_cpu_usage", 0.5, 0.1, 200)
+    CreateNormalDistribution("local_protime", 1.2, 0.1, 200)
+    CreateNormalDistribution("server_protime", 6.1, 0.1, 200)
 
     # CreatePeopleNumAndConfSum("train_local_origin","train_local_peoplenum_confsum")
     # CreatePeopleNumAndConfSum("train_server_origin", "train_server_peoplenum_confsum")
 
     CreateDataset()
 
-    # AddIndex("train_local4")
-    # AddIndex("train_server4")
+    # AddIndex("train_local")
+    # AddIndex("train_server")
+
+    AddIndex("test_local")
+    AddIndex("test_server")
 
     # CreateNormalDistribution("test_file_size",0.5,0.1,100)
     # CreateMemCpuNormalDistribution("test_mem_cpu_usage", 0.5, 0.1, 100)
