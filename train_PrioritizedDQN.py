@@ -37,7 +37,7 @@ from PrioritizedDQN.proportional_per import ProportionalPER
 from train_env import TrainEnv
 
 MEMORY_SIZE = 20000
-MEMORY_WARMUP_SIZE = 200
+MEMORY_WARMUP_SIZE = 20000
 UPDATE_FREQ = 5
 GAMMA = 0.99
 LEARNING_RATE = 0.0005
@@ -60,9 +60,7 @@ def process_transitions(transitions):
     batch_obs = np.stack(transitions[:, 0].copy())
     batch_act = transitions[:, 1].copy()
     batch_reward = transitions[:, 2].copy()
-    batch_next_obs = np.expand_dims(np.stack(transitions[:, 3]), axis=1)
-    batch_next_obs = np.concatenate([batch_obs, batch_next_obs],
-                                    axis=1)[:, 1:, :, :].copy()
+    batch_next_obs = np.stack(transitions[:, 3]).copy()
     batch_terminal = transitions[:, 4].copy()
     batch = (batch_obs, batch_act, batch_reward, batch_next_obs,
              batch_terminal)
@@ -115,14 +113,12 @@ def run_evaluate_episode(env, agent):
 
 
 def main():
-    # Prepare environments
     env = TrainEnv()
 
-    # Init Prioritized Replay Memory
     per = ProportionalPER(alpha=0.6, seg_num=args.batch_size, size=MEMORY_SIZE)
 
-    # Prepare PARL agent
     act_dim = env.action_space.n
+    obs_shape = env.observation_space.shape
     model = AtariModel(act_dim)
     if args.alg == 'ddqn':
         algorithm = PrioritizedDoubleDQN(
@@ -130,7 +126,10 @@ def main():
     elif args.alg == 'dqn':
         algorithm = PrioritizedDQN(
             model, act_dim=act_dim, gamma=GAMMA, lr=LEARNING_RATE)
-    agent = AtariAgent(algorithm, act_dim=act_dim, update_freq=UPDATE_FREQ)
+    agent = AtariAgent(
+        algorithm,
+        obs_dim=obs_shape[0],
+        act_dim=act_dim)
 
     # Replay memory warmup
     total_step = 0
@@ -153,12 +152,13 @@ def main():
     train_episode = 0
     test_episode = 0
 
-    while train_episode < args.train_total_steps:
-        total_reward, steps = run_episode(env, agent, per, train=True)
-        train_episode += 1
-        pbar.update(1)
-        log_list.append("Train " + str(train_episode) + " " + str(total_reward) + "\n")
-        logger.info('train_episode:{}    train_reward:{}'.format(train_episode, total_reward))
+    while train_episode < args.max_episode:
+        for i in range(0, 10):
+            total_reward, steps = run_episode(env, agent, per, train=True)
+            train_episode += 1
+            pbar.update(1)
+            log_list.append("Train " + str(train_episode) + " " + str(total_reward) + "\n")
+            logger.info('train_episode:{}    train_reward:{}'.format(train_episode, total_reward))
 
         eval_reward = run_evaluate_episode(env, agent)
         log_list.append("Test " + str(test_episode) + " " + str(eval_reward) + "\n")

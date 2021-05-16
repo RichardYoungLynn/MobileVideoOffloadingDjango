@@ -57,7 +57,7 @@ class TrainEnv():
                     else:
                         reward = 0
         elif train == 0:
-            if (self.count == 199):
+            if (self.count == 599):
                 if action == 0:
                     if offload:
                         reward = 0

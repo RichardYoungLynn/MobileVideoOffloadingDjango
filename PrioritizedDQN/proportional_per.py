@@ -77,33 +77,17 @@ class ProportionalPER(object):
     def __init__(self,
                  alpha,
                  seg_num,
-                 size=1e6,
+                 size=2e4,
                  eps=0.01,
-                 init_mem=None,
-                 framestack=4):
+                 init_mem=None):
         self.alpha = alpha
         self.seg_num = seg_num
         self.size = int(size)
         self.elements = SumTree(self.size)
         if init_mem:
             self.elements.from_list(init_mem)
-        self.framestack = framestack
         self._max_priority = 1.0
         self.eps = eps
-
-    def _get_stacked_item(self, idx):
-        """ For atari environment, we use a 4-frame-stack as input
-        """
-        obs, act, reward, next_obs, done = self.elements.elements[idx]
-        stacked_obs = np.zeros((self.framestack, ) + obs.shape)
-        stacked_obs[-1] = obs
-        for i in range(self.framestack - 2, -1, -1):
-            elem_idx = (self.size + idx + i - self.framestack + 1) % self.size
-            obs, _, _, _, d = self.elements.elements[elem_idx]
-            if d:
-                break
-            stacked_obs[i] = obs
-        return (stacked_obs, act, reward, next_obs, done)
 
     def store(self, item, delta=None):
         assert len(item) == 5  # (s, a, r, s', terminal)
@@ -145,7 +129,7 @@ class ProportionalPER(object):
             sample_val = np.random.uniform(low, high)
             _, tree_idx, priority = self.elements.retrieve(sample_val)
             elem_idx = tree_idx - self.elements.capacity + 1
-            item = self._get_stacked_item(elem_idx)
+            item = self.elements.elements[elem_idx]
             items.append(item)
             indices.append(tree_idx)
             priorities.append(priority)
