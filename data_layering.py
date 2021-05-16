@@ -137,10 +137,10 @@ if __name__ == '__main__':
     # CreateNormalDistribution("local_protime", 1.2, 0.1, 600)
     # CreateNormalDistribution("server_protime", 6.1, 0.1, 600)
 
-    CreateNormalDistribution("file_size", 0.5, 0.1, 200)
-    CreateMemCpuNormalDistribution("mem_cpu_usage", 0.5, 0.1, 200)
-    CreateNormalDistribution("local_protime", 1.2, 0.1, 200)
-    CreateNormalDistribution("server_protime", 6.1, 0.1, 200)
+    # CreateNormalDistribution("file_size", 0.5, 0.1, 600)
+    # CreateMemCpuNormalDistribution("mem_cpu_usage", 0.5, 0.1, 600)
+    # CreateNormalDistribution("local_protime", 1.2, 0.1, 600)
+    # CreateNormalDistribution("server_protime", 6.1, 0.1, 600)
 
     # CreatePeopleNumAndConfSum("train_local_origin","train_local_peoplenum_confsum")
     # CreatePeopleNumAndConfSum("train_server_origin", "train_server_peoplenum_confsum")

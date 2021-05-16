@@ -385,7 +385,7 @@ def sampleDataFromDataset():
     src_dir="D:\\TestImages\\"
     dist_dir="D:\\PartTestImages"
     images=os.listdir(src_dir)
-    images=random.sample(images,250)
+    images=random.sample(images,600)
     for image in images:
         print(image)
         shutil.copy(src_dir+image,dist_dir)

@@ -1,4 +1,4 @@
-#   Copyright (c) 2018 PaddlePaddle Authors. All Rights Reserved.
+#   Copyright (c) 2020 PaddlePaddle Authors. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -15,10 +15,8 @@
 import numpy as np
 import paddle.fluid as fluid
 import parl
-from parl.utils import logger
-from gym import spaces
 from parl import layers
-from parl.utils.scheduler import PiecewiseScheduler, LinearDecayScheduler
+
 
 
 class AtariAgent(parl.Agent):
@@ -55,16 +53,20 @@ class AtariAgent(parl.Agent):
                 shape=[self.obs_dim],
                 dtype='float32')
             terminal = layers.data(name='terminal', shape=[], dtype='bool')
-            self.cost = self.alg.learn(obs, action, reward, next_obs, terminal)
+            sample_weight = layers.data(
+                name='sample_weight', shape=[1], dtype='float32')
+            self.cost, self.delta = self.alg.learn(
+                obs, action, reward, next_obs, terminal, sample_weight)
 
-    def sample(self, obs):
+    def sample(self, obs, decay_exploration=True):
         sample = np.random.rand()
         if sample < self.exploration:
             act = np.random.randint(self.act_dim)
         else:
             act = self.predict(obs)
 
-        self.exploration = max(0.01, self.exploration - 1e-6)
+        if decay_exploration:
+            self.exploration = max(0.1, self.exploration - 1e-6)
         return act
 
     def predict(self, obs):
@@ -77,7 +79,7 @@ class AtariAgent(parl.Agent):
         act = np.argmax(pred_Q)
         return act
 
-    def learn(self, obs, act, reward, next_obs, terminal):
+    def learn(self, obs, act, reward, next_obs, terminal, sample_weight):
         if self.global_step % self.update_target_steps == 0:
             self.alg.sync_target()
         self.global_step += 1
@@ -86,10 +88,11 @@ class AtariAgent(parl.Agent):
         feed = {
             'obs': obs.astype('float32'),
             'act': act.astype('int32'),
-            'reward': reward,
+            'reward': reward.astype('float32'),
             'next_obs': next_obs.astype('float32'),
-            'terminal': terminal
+            'terminal': terminal.astype('bool'),
+            'sample_weight': sample_weight.astype('float32')
         }
-        cost = self.fluid_executor.run(
-            self.learn_program, feed=feed, fetch_list=[self.cost])[0]
-        return cost
+        cost, delta = self.fluid_executor.run(
+            self.learn_program, feed=feed, fetch_list=[self.cost, self.delta])
+        return cost, delta

@@ -111,20 +111,19 @@ def main():
         algorithm,
         obs_dim=obs_shape[0],
         act_dim=action_dim,
-        e_greed=0.2,  # explore
-        e_greed_decrement=1e-8
+        e_greed=0.9,  # explore
+        e_greed_decrement=1e-6
     )  # probability of exploring is decreasing during training
 
     while len(rpm) < MEMORY_WARMUP_SIZE:  # warm up replay memory
         run_episode(agent, env, rpm)
 
-    # 加载模型
     if os.path.exists('dqn_model'):
         agent.restore('./dqn_model')
         print("加载模型成功，开始预测：")
         evaluate(agent, env)
 
-    max_episode = 15000
+    max_episode = 2000
 
     log_list = []
     fo = open("log/"+str(math.floor(time.time()*1000.0))+"dqn.txt", "w")
@@ -145,7 +144,6 @@ def main():
     fo.writelines(log_list)
     fo.close()
 
-    # save the parameters to ./dqn_models
     agent.save('./dqn_model')
     print("模型保存成功")
 

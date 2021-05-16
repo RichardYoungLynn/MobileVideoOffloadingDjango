@@ -42,39 +42,36 @@ def ParseTrainResult(filename):
         if results[0] == 'Train':
             train_count += 1
             train_sum += float(results[2])
-            if train_count % 100 == 0:
+            if train_count % 10 == 0:
                 train_x_list.append(train_count)
-                train_y_list.append(train_sum / 100.0)
+                train_y_list.append(train_sum / 10.0)
                 train_sum = 0
         if results[0] == 'Test':
+            test_x_list.append(test_count)
+            test_y_list.append(float(results[2]))
             test_count += 1
-            test_sum += float(results[2])
-            if test_count % 10 == 0:
-                test_x_list.append(test_count)
-                test_y_list.append(test_sum / 10.0)
-                test_sum = 0
 
     print(len(train_x_list))
     print(len(train_y_list))
 
     train_x_np = np.asarray(train_x_list)
     train_dqn_np = np.asarray(train_y_list)
-    train_local_np=np.linspace(137,137,len(train_y_list))
-    train_server_np = np.linspace(163, 163, len(train_y_list))
-    train_random_np = np.linspace(152, 152, len(train_y_list))
+    train_local_np = np.linspace(305, 305, len(train_y_list))
+    train_server_np = np.linspace(295, 295, len(train_y_list))
+    train_random_np = np.linspace(296, 296, len(train_y_list))
 
     print(train_x_np)
     print(train_dqn_np)
 
-    plt.title("Train result in policy gradient")
-    plt.xlabel("episode num (*100)")
-    plt.ylabel("average reward in 100 episodes")
+    plt.title("Train result in Dueling DQN")
+    plt.xlabel("episode")
+    plt.ylabel("reward")
     plt.plot(train_x_np, train_dqn_np, color="red")
     plt.plot(train_x_np, train_local_np, color="blue")
     plt.plot(train_x_np, train_server_np, color="yellow")
     plt.plot(train_x_np, train_random_np, color="green")
-    plt.legend(('dqn', 'local', 'server', 'random'), loc='upper left')
-    plt.savefig(fname="data/result/train_policygradient_analysis3.png")
+    plt.legend(('dueling', 'local', 'server', 'random'), loc='upper left')
+    plt.savefig(fname="data/result/train_dueling_analysis.png")
     plt.show()
 
 
@@ -95,39 +92,36 @@ def ParseTestResult(filename):
         if results[0] == 'Train':
             train_count += 1
             train_sum += float(results[2])
-            if train_count % 100 == 0:
+            if train_count % 10 == 0:
                 train_x_list.append(train_count)
-                train_y_list.append(train_sum / 100.0)
+                train_y_list.append(train_sum / 10.0)
                 train_sum = 0
         if results[0] == 'Test':
+            test_x_list.append(test_count)
+            test_y_list.append(float(results[2]))
             test_count += 1
-            test_sum += float(results[2])
-            if test_count % 10 == 0:
-                test_x_list.append(test_count)
-                test_y_list.append(test_sum / 10.0)
-                test_sum = 0
 
     print(len(test_x_list))
     print(len(test_y_list))
 
     test_x_np = np.asarray(test_x_list)
     test_dqn_np = np.asarray(test_y_list)
-    test_local_np = np.linspace(59, 59, len(test_y_list))
-    test_server_np = np.linspace(41, 41, len(test_y_list))
-    test_random_np = np.linspace(51, 51, len(test_y_list))
+    test_local_np = np.linspace(131, 131, len(test_y_list))
+    test_server_np = np.linspace(69, 69, len(test_y_list))
+    test_random_np = np.linspace(101, 101, len(test_y_list))
 
     print(test_x_np)
     print(test_dqn_np)
 
-    plt.title("Test result in policy gradient")
-    plt.xlabel("episode num (*10)")
-    plt.ylabel("average reward in 10 episodes")
+    plt.title("Test result in Dueling DQN")
+    plt.xlabel("episode")
+    plt.ylabel("reward")
     plt.plot(test_x_np, test_dqn_np, color="red")
     plt.plot(test_x_np, test_local_np, color="blue")
     plt.plot(test_x_np, test_server_np, color="yellow")
     plt.plot(test_x_np, test_random_np, color="green")
-    plt.legend(('dqn', 'local', 'server', 'random'), loc='upper left')
-    plt.savefig(fname="data/result/test_policygradient_analysis3.png")
+    plt.legend(('dueling', 'local', 'server', 'random'), loc='upper left')
+    plt.savefig(fname="data/result/test_dueling_analysis.png")
     plt.show()
 
 
@@ -375,12 +369,19 @@ def SingleStatusAnalysis(type):
 
 
 if __name__ == '__main__':
-    # pass
     # LocalPeopleNumAnalysis()
     # AddIndex("test_local_server_peoplenum")
     # SortFile("test_local_server_peoplenum")
     # CreateFile()
-    # ParseTrainResult("1619922206748policygradient")
+
+    # ParseTrainResult("1620993823945dqn")
+    # ParseTrainResult("1621001822268ddqn")
+    # ParseTrainResult("1621042886864dueling")
+
+    # ParseTestResult("1620993823945dqn")
+    # ParseTestResult("1621001822268ddqn")
+    ParseTestResult("1621042886864dueling")
+
     # ParseTestResult("1619922206748policygradient")
 
     # CreateNormalDistribution("local_people_num_analysis/file_size", 0.5, 0.0001, 100)
@@ -402,7 +403,7 @@ if __name__ == '__main__':
     # CreateNormalDistribution("mem_cpu_usage_analysis/server_protime", 6.1, 0.0001, 100)
     # CreateDataset("mem_cpu_usage_analysis")
 
-    SingleStatusAnalysis("file_size_analysis")
+    # SingleStatusAnalysis("file_size_analysis")
     # SingleStatusAnalysis("local_people_num_analysis")
     # SingleStatusAnalysis("mem_cpu_usage_analysis")
 

@@ -147,9 +147,9 @@ def LayeringReward(num):
 
 
 def TestTrainEnvLayered():
-    train = 0
+    train = 1
     train_len = 600
-    test_len = 200
+    test_len = 600
     if train == 0:
         len1 = test_len
     else:
@@ -168,12 +168,20 @@ def TestTrainEnvLayered():
         memory_usage = float(readLocalReward(i, train)['memory_usage'])
         cpu_usage = float(readLocalReward(i, train)['cpu_usage'])
 
+        # if local_people_num == 0:
+        #     local_r1 = 0
+        # else:
+        #     local_r1 = math.log(local_people_num + local_confidence_sum)
+        # local_r2 = math.log(local_process_time) + math.exp(memory_usage + cpu_usage)
+        # local_reward = local_r1 / local_r2
+        # local_reward_sum += local_reward
+
         if local_people_num == 0:
             local_r1 = 0
         else:
-            local_r1 = math.log(local_people_num) + local_confidence_sum
-        local_r2 = local_process_time + math.exp(memory_usage + cpu_usage)
-        local_reward = local_r1 / local_r2
+            local_r1 = math.log(local_people_num + local_confidence_sum) / local_process_time
+        local_r2 = math.exp(memory_usage + cpu_usage)
+        local_reward = local_r1 - local_r2
         local_reward_sum += local_reward
 
         server_people_num = float(readServerReward(i, train)['server_people_num'])
@@ -186,9 +194,9 @@ def TestTrainEnvLayered():
         if server_people_num == 0:
             server_r1 = 0
         else:
-            server_r1 = math.log(server_people_num) + server_confidence_sum
-        server_r2 = server_process_time + math.exp(server_transmission_time_selftest)
-        server_reward = server_r1 / server_r2
+            server_r1 = math.log(server_people_num + server_confidence_sum) / server_process_time
+        server_r2 = math.exp(server_transmission_time_selftest)
+        server_reward = server_r1 - server_r2
         server_reward_sum += server_reward
 
         offload = local_reward < server_reward

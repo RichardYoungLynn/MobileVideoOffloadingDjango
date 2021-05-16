@@ -89,6 +89,7 @@ class TrainEnv():
         local_process_time = float(readLocalReward(self.count, train)['local_process_time'])
         memory_usage = float(readLocalReward(self.count, train)['memory_usage'])
         cpu_usage = float(readLocalReward(self.count, train)['cpu_usage'])
+
         if local_people_num == 0:
             local_r1 = 0
         else:
@@ -99,10 +100,10 @@ class TrainEnv():
         server_people_num = float(readServerReward(self.count, train)['server_people_num'])
         server_confidence_sum = float(readServerReward(self.count, train)['server_confidence_sum'])
         server_process_time = float(readServerReward(self.count, train)['server_process_time'])
-        server_transmission_time_selftest = float(
-            readServerReward(self.count, train)['server_transmission_time_selftest'])
+        server_transmission_time_selftest = float(readServerReward(self.count, train)['server_transmission_time_selftest'])
         server_transmission_time_4g = float(readServerReward(self.count, train)['server_transmission_time_4g'])
         server_transmission_time_5g = float(readServerReward(self.count, train)['server_transmission_time_5g'])
+
         if server_people_num == 0:
             server_r1 = 0
         else:

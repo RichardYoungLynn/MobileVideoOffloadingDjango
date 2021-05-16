@@ -1,4 +1,4 @@
-#   Copyright (c) 2018 PaddlePaddle Authors. All Rights Reserved.
+#   Copyright (c) 2020 PaddlePaddle Authors. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -12,14 +12,14 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import numpy as np
 import paddle.fluid as fluid
 import parl
 from parl import layers
-from parl.utils import logger
 
 
 # class AtariModel(parl.Model):
-#     def __init__(self, act_dim, algo='DQN'):
+#     def __init__(self, act_dim):
 #         self.act_dim = act_dim
 #
 #         self.conv1 = layers.conv2d(
@@ -31,14 +31,7 @@ from parl.utils import logger
 #         self.conv4 = layers.conv2d(
 #             num_filters=64, filter_size=3, stride=1, padding=1, act='relu')
 #
-#         self.algo = algo
-#         if algo == 'Dueling':
-#             self.fc1_adv = layers.fc(size=512, act='relu')
-#             self.fc2_adv = layers.fc(size=act_dim)
-#             self.fc1_val = layers.fc(size=512, act='relu')
-#             self.fc2_val = layers.fc(size=1)
-#         else:
-#             self.fc1 = layers.fc(size=act_dim)
+#         self.fc1 = layers.fc(size=act_dim)
 #
 #     def value(self, obs):
 #         obs = obs / 255.0
@@ -54,41 +47,24 @@ from parl.utils import logger
 #         out = self.conv4(out)
 #         out = layers.flatten(out, axis=1)
 #
-#         if self.algo == 'Dueling':
-#             As = self.fc2_adv(self.fc1_adv(out))
-#             V = self.fc2_val(self.fc1_val(out))
-#             Q = As + (V - layers.reduce_mean(As, dim=1, keep_dim=True))
-#         else:
-#             Q = self.fc1(out)
+#         Q = self.fc1(out)
 #         return Q
 
 
 class AtariModel(parl.Model):
-    def __init__(self, act_dim, algo='DQN'):
+    def __init__(self, act_dim):
         self.act_dim = act_dim
-        self.algo = algo
 
-        if algo == 'Dueling':
-            self.fc1_adv = layers.fc(size=128, act='relu')
-            self.fc2_adv = layers.fc(size=128, act='relu')
-            self.fc3_adv = layers.fc(size=act_dim)
-            self.fc1_val = layers.fc(size=128, act='relu')
-            self.fc2_val = layers.fc(size=128, act='relu')
-            self.fc3_val = layers.fc(size=1)
-        else:
-            hid1_size = 128
-            hid2_size = 128
-            self.fc1 = layers.fc(size=hid1_size, act='relu')
-            self.fc2 = layers.fc(size=hid2_size, act='relu')
-            self.fc3 = layers.fc(size=act_dim, act=None)
+        hid1_size = 128
+        hid2_size = 128
+        self.fc1 = layers.fc(size=hid1_size, act='relu')
+        self.fc2 = layers.fc(size=hid2_size, act='relu')
+        self.fc3 = layers.fc(size=self.act_dim, act=None)
+
 
     def value(self, obs):
-        if self.algo == 'Dueling':
-            As = self.fc3_adv(self.fc2_adv(self.fc1_adv(obs)))
-            V = self.fc3_val(self.fc2_val(self.fc1_val(obs)))
-            Q = As + (V - layers.reduce_mean(As, dim=1, keep_dim=True))
-        else:
-            h1 = self.fc1(obs)
-            h2 = self.fc2(h1)
-            Q = self.fc3(h2)
+        h1 = self.fc1(obs)
+        h2 = self.fc2(h1)
+        Q = self.fc3(h2)
+
         return Q
