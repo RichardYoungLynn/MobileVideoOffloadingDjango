@@ -96,8 +96,8 @@ def main():
 
     pbar = tqdm(total=args.max_episode)
 
-    if os.path.exists('dueling_model'):
-        agent.restore('./dueling_model')
+    if os.path.exists('dqn_model'):
+        agent.restore('./dqn_model')
         print("加载模型成功，开始预测：")
         run_evaluate_episode(env, agent)
 
@@ -122,7 +122,7 @@ def main():
     fo.close()
     pbar.close()
 
-    agent.save('./dueling_model')
+    agent.save('./dqn_model')
     print("模型保存成功")
 
 
@@ -132,7 +132,7 @@ if __name__ == '__main__':
         '--batch_size', type=int, default=32, help='batch size for training')
     parser.add_argument(
         '--algo',
-        default='Dueling',
+        default='DQN',
         help=
         'DQN/DDQN/Dueling, represent DQN, double DQN, and dueling DQN respectively',
     )

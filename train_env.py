@@ -26,7 +26,7 @@ class TrainEnv():
 
     def __init__(self):
         self.action_space = spaces.Discrete(2)
-        self.observation_space = spaces.Box(np.array([0.0, 0.0, 0.0, 0.0]), np.array([40.0, 1.0, 1.0, 1.0]))
+        self.observation_space = spaces.Box(np.array([0.0, 0.0, 0.0, 0.0]), np.array([20.0, 1.0, 1.0, 1.0]))
         self.count = 0
 
     def cal_reward(self, offload, action, train):
@@ -93,9 +93,9 @@ class TrainEnv():
         if local_people_num == 0:
             local_r1 = 0
         else:
-            local_r1 = math.log(local_people_num) + local_confidence_sum
-        local_r2 = local_process_time + math.exp(memory_usage + cpu_usage)
-        local_reward = local_r1 / local_r2
+            local_r1 = math.log(local_people_num + local_confidence_sum) / local_process_time
+        local_r2 = math.exp(memory_usage + cpu_usage)
+        local_reward = local_r1 - local_r2
 
         server_people_num = float(readServerReward(self.count, train)['server_people_num'])
         server_confidence_sum = float(readServerReward(self.count, train)['server_confidence_sum'])
@@ -107,16 +107,16 @@ class TrainEnv():
         if server_people_num == 0:
             server_r1 = 0
         else:
-            server_r1 = math.log(server_people_num) + server_confidence_sum
-        server_r2 = server_process_time + math.exp(server_transmission_time_selftest)
-        server_reward = server_r1 / server_r2
+            server_r1 = math.log(server_people_num + server_confidence_sum) / server_process_time
+        server_r2 = math.exp(server_transmission_time_selftest)
+        server_reward = server_r1 - server_r2
 
         offload = local_reward < server_reward
 
         done, reward = self.cal_reward(offload, action, train)
 
         state = np.array(
-            [readLocalReward(self.count, train)['local_people_num'], readLocalReward(self.count, train)['file_size'],
+            [readLocalReward(self.count, train)['local_confidence_sum'], readLocalReward(self.count, train)['file_size'],
              readLocalReward(self.count, train)['memory_usage'], readLocalReward(self.count, train)['cpu_usage']])
 
         return state, reward, done, {}
@@ -125,7 +125,7 @@ class TrainEnv():
         self.count = 0
 
         state = np.array(
-            [readLocalReward(self.count, train)['local_people_num'], readLocalReward(self.count, train)['file_size'],
+            [readLocalReward(self.count, train)['local_confidence_sum'], readLocalReward(self.count, train)['file_size'],
              readLocalReward(self.count, train)['memory_usage'], readLocalReward(self.count, train)['cpu_usage']])
 
         return state

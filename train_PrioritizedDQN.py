@@ -142,13 +142,13 @@ def main():
 
     pbar = tqdm(total=args.max_episode)
 
-    if os.path.exists('prioritized_model'):
-        agent.restore('./prioritized_model')
+    if os.path.exists('prioritized_dqn_model'):
+        agent.restore('./prioritized_dqn_model')
         print("加载模型成功，开始预测：")
         run_evaluate_episode(env, agent)
 
     log_list = []
-    fo = open("log/" + str(math.floor(time.time() * 1000.0)) + "dueling.txt", "w")
+    fo = open("log/" + str(math.floor(time.time() * 1000.0)) + "prioritized_dqn.txt", "w")
     train_episode = 0
     test_episode = 0
 
@@ -169,7 +169,7 @@ def main():
     fo.close()
     pbar.close()
 
-    agent.save('./prioritized_model')
+    agent.save('./prioritized_dqn_model')
     print("模型保存成功")
 
 
@@ -180,7 +180,7 @@ if __name__ == '__main__':
     parser.add_argument(
         '--alg',
         type=str,
-        default="ddqn",
+        default="dqn",
         help='dqn or ddqn, training algorithm to use.')
     parser.add_argument(
         '--max_episode',

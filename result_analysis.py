@@ -9,12 +9,9 @@ import matplotlib.pyplot as plt
 
 import parl
 from parl.utils import logger
-from DQN.cartpole_model import CartpoleModel
-from DQN.cartpole_agent import CartpoleAgent
-from DQN.replay_memory import ReplayMemory
-from PolicyGradient.agent import Agent
-from PolicyGradient.model import Model
-from PolicyGradient.algorithm import PolicyGradient  # from parl.algorithms import PolicyGradient
+from DQN_variant.atari_agent import AtariAgent
+from DQN_variant.atari_model import AtariModel
+from DQN_variant.replay_memory import ReplayMemory
 from analysis_env import AnalysisEnv
 
 LEARN_FREQ = 5  # update parameters every 5 steps
@@ -40,12 +37,9 @@ def ParseTrainResult(filename):
     for index in range(lines_len):
         results = result_lines[index].strip().split(' ')
         if results[0] == 'Train':
+            train_x_list.append(train_count)
+            train_y_list.append(float(results[2]))
             train_count += 1
-            train_sum += float(results[2])
-            if train_count % 10 == 0:
-                train_x_list.append(train_count)
-                train_y_list.append(train_sum / 10.0)
-                train_sum = 0
         if results[0] == 'Test':
             test_x_list.append(test_count)
             test_y_list.append(float(results[2]))
@@ -56,22 +50,22 @@ def ParseTrainResult(filename):
 
     train_x_np = np.asarray(train_x_list)
     train_dqn_np = np.asarray(train_y_list)
-    train_local_np = np.linspace(305, 305, len(train_y_list))
-    train_server_np = np.linspace(295, 295, len(train_y_list))
-    train_random_np = np.linspace(296, 296, len(train_y_list))
+    train_local_np = np.linspace(290, 290, len(train_y_list))
+    train_server_np = np.linspace(310, 310, len(train_y_list))
+    train_random_np = np.linspace(312, 312, len(train_y_list))
 
     print(train_x_np)
     print(train_dqn_np)
 
-    plt.title("Train result in Dueling DQN")
+    plt.title("Train result in Prioritized DQN")
     plt.xlabel("episode")
     plt.ylabel("reward")
     plt.plot(train_x_np, train_dqn_np, color="red")
     plt.plot(train_x_np, train_local_np, color="blue")
     plt.plot(train_x_np, train_server_np, color="yellow")
     plt.plot(train_x_np, train_random_np, color="green")
-    plt.legend(('dueling', 'local', 'server', 'random'), loc='upper left')
-    plt.savefig(fname="data/result/train_dueling_analysis.png")
+    plt.legend(('prioritized dqn', 'local', 'server', 'random'), loc='upper left')
+    plt.savefig(fname="data/result/train_prioritized_dqn_analysis.png")
     plt.show()
 
 
@@ -90,12 +84,9 @@ def ParseTestResult(filename):
     for index in range(lines_len):
         results = result_lines[index].strip().split(' ')
         if results[0] == 'Train':
+            train_x_list.append(train_count)
+            train_y_list.append(float(results[2]))
             train_count += 1
-            train_sum += float(results[2])
-            if train_count % 10 == 0:
-                train_x_list.append(train_count)
-                train_y_list.append(train_sum / 10.0)
-                train_sum = 0
         if results[0] == 'Test':
             test_x_list.append(test_count)
             test_y_list.append(float(results[2]))
@@ -106,22 +97,22 @@ def ParseTestResult(filename):
 
     test_x_np = np.asarray(test_x_list)
     test_dqn_np = np.asarray(test_y_list)
-    test_local_np = np.linspace(131, 131, len(test_y_list))
-    test_server_np = np.linspace(69, 69, len(test_y_list))
-    test_random_np = np.linspace(101, 101, len(test_y_list))
+    test_local_np = np.linspace(289, 289, len(test_y_list))
+    test_server_np = np.linspace(311, 311, len(test_y_list))
+    test_random_np = np.linspace(296, 296, len(test_y_list))
 
     print(test_x_np)
     print(test_dqn_np)
 
-    plt.title("Test result in Dueling DQN")
+    plt.title("Test result in Prioritized DQN")
     plt.xlabel("episode")
     plt.ylabel("reward")
     plt.plot(test_x_np, test_dqn_np, color="red")
     plt.plot(test_x_np, test_local_np, color="blue")
     plt.plot(test_x_np, test_server_np, color="yellow")
     plt.plot(test_x_np, test_random_np, color="green")
-    plt.legend(('dueling', 'local', 'server', 'random'), loc='upper left')
-    plt.savefig(fname="data/result/test_dueling_analysis.png")
+    plt.legend(('prioritized dqn', 'local', 'server', 'random'), loc='upper left')
+    plt.savefig(fname="data/result/test_prioritized_dqn_analysis.png")
     plt.show()
 
 
@@ -163,24 +154,30 @@ def CreateFile():
     fo.close()
 
 
-def SortFile(filename):
+def SortFile():
     list = []
-    fo = open("data/layering/analysis/" + filename + ".txt", "r")
-    lines = fo.readlines()
-    fo.close()
-    len1 = len(lines)
+    fo1 = open("data/train/train_local.txt", "r")
+    fo2 = open("data/train/train_server.txt", "r")
+    lines1 = fo1.readlines()
+    lines2 = fo2.readlines()
+    fo1.close()
+    fo2.close()
+    len1 = len(lines1)
     for index in range(len1):
-        line = lines[index].strip().split(' ')
-        list.append([line[0], line[1], line[2]])
+        line1 = lines1[index].strip().split(' ')
+        line2 = lines2[index].strip().split(' ')
+        list.append([line1[0], line1[1], line1[2], line1[3], line1[4], line1[5], line1[6],
+                     line2[0], line2[1], line2[2], line2[3], line2[4], line2[5], line2[6]])
 
     list.sort(key=TakeSecond)
 
     lines = []
     for index in range(len1):
         line = list[index]
-        lines.append(line[0] + ' ' + line[1] + ' ' + line[2] + '\n')
+        lines.append(line[0] + ' ' + line[1] + ' ' + line[2] + ' ' + line[3] +' ' + line[4] + ' ' + line[5] + ' ' + line[6] + ' ' +
+                     line[7] + ' ' + line[8] + ' ' + line[9] + ' ' + line[10] +' ' + line[11] + ' ' + line[12] + ' ' + line[13] + '\n')
 
-    fo = open("data/layering/analysis/" + filename + ".txt", "w")
+    fo = open("data/analysis/train.txt", "w")
     fo.writelines(lines)
     fo.close()
 
@@ -316,71 +313,71 @@ def evaluate(agent, env, type):
 
 
 def SingleStatusAnalysis(type):
-    # env = AnalysisEnv(type)
-    # action_dim = env.action_space.n
-    # obs_shape = env.observation_space.shape
-    #
-    # model = CartpoleModel(act_dim=action_dim)
-    # algorithm = parl.algorithms.DQN(
-    #     model, act_dim=action_dim, gamma=GAMMA, lr=LEARNING_RATE)
-    # agent = CartpoleAgent(
-    #     algorithm,
-    #     obs_dim=obs_shape[0],
-    #     act_dim=action_dim,
-    #     e_greed=0.2,
-    #     e_greed_decrement=1e-8
-    # )
-    #
-    # if os.path.exists('./dqn_models/dqn_model4'):
-    #     agent.restore('./dqn_models/dqn_model4')
-    #     print("DQN加载模型成功，开始预测：")
-
     env = AnalysisEnv(type)
-    obs_dim = env.observation_space.shape[0]
     act_dim = env.action_space.n
-    logger.info('obs_dim {}, act_dim {}'.format(obs_dim, act_dim))
+    obs_shape = env.observation_space.shape
+    algo = 'DQN'
 
-    model = Model(act_dim=act_dim)
-    alg = PolicyGradient(model, lr=LEARNING_RATE)
-    agent = Agent(alg, obs_dim=obs_dim, act_dim=act_dim)
+    model = AtariModel(act_dim, algo)
+    if algo == 'DDQN':
+        algorithm = parl.algorithms.DDQN(model, act_dim=act_dim, gamma=GAMMA, lr=LEARNING_RATE)
+    elif algo in ['DQN', 'Dueling']:
+        algorithm = parl.algorithms.DQN(model, act_dim=act_dim, gamma=GAMMA, lr=LEARNING_RATE)
+    agent = AtariAgent(
+        algorithm,
+        obs_dim=obs_shape[0],
+        act_dim=act_dim)
 
-    if os.path.exists('./policygradient_models/policygradient_model3'):
-        agent.restore('./policygradient_models/policygradient_model3')
-        print("policy gradient加载模型成功，开始预测：")
+    if algo == 'DQN':
+        if os.path.exists('./dqn_models/dqn_model3'):
+            agent.restore('./dqn_models/dqn_model3')
+            print("DQN加载模型成功，开始预测：")
+
+    if algo == 'DDQN':
+        if os.path.exists('./ddqn_models/ddqn_model2'):
+            agent.restore('./ddqn_models/ddqn_model2')
+            print("DDQN加载模型成功，开始预测：")
+
+    if algo == 'Dueling':
+        if os.path.exists('./dueling_dqn_models/dueling_model2'):
+            agent.restore('./dueling_dqn_models/dueling_model2')
+            print("Dueling DQN加载模型成功，开始预测：")
 
     evaluate_reward_list, local_reward_list, server_reward_list = evaluate(agent, env, type)
 
     print("预测结束")
 
-    x_np = np.arange(100)
+    x_np = np.arange(600)
     evaluate_np = np.asarray(evaluate_reward_list)
     local_np = np.asarray(local_reward_list)
     server_np = np.asarray(server_reward_list)
 
     plt.title("Analysis result")
-    plt.xlabel("frame index")
+    plt.xlabel("index")
     plt.ylabel("reward")
     plt.plot(x_np, local_np, color="red")
     plt.plot(x_np, server_np, color="blue")
     plt.plot(x_np, evaluate_np, color="black")
-    plt.legend(('local', 'server', 'evaluate'), loc='best')
-    plt.savefig(fname="data/layering/analysis/"+type+"/analysis_result.png")
-    # plt.show()
+    plt.legend(('local', 'server', 'eval'), loc='best')
+    plt.savefig(fname="data/analysis/"+type+"_analysis_result.png")
+    plt.show()
 
 
 if __name__ == '__main__':
     # LocalPeopleNumAnalysis()
     # AddIndex("test_local_server_peoplenum")
-    # SortFile("test_local_server_peoplenum")
+    # SortFile()
     # CreateFile()
 
-    # ParseTrainResult("1620993823945dqn")
-    # ParseTrainResult("1621001822268ddqn")
-    # ParseTrainResult("1621042886864dueling")
+    # ParseTrainResult("1621150682506dqn")
+    # ParseTrainResult("1621164776887ddqn")
+    # ParseTrainResult("1621215782630dueling")
+    # ParseTrainResult("1621232481409prioritized_dqn")
 
-    # ParseTestResult("1620993823945dqn")
-    # ParseTestResult("1621001822268ddqn")
-    ParseTestResult("1621042886864dueling")
+    # ParseTestResult("1621150682506dqn")
+    # ParseTestResult("1621164776887ddqn")
+    # ParseTestResult("1621215782630dueling")
+    # ParseTestResult("1621232481409prioritized_dqn")
 
     # ParseTestResult("1619922206748policygradient")
 
@@ -409,6 +406,8 @@ if __name__ == '__main__':
 
     # ChangeLocalServerPeopleNum()
     # CreateDataset("file_size_analysis")
+
+    SingleStatusAnalysis("train_local")
 
 
 
