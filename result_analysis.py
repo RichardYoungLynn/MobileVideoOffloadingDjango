@@ -156,8 +156,8 @@ def CreateFile():
 
 def SortFile():
     list = []
-    fo1 = open("data/train/train_local.txt", "r")
-    fo2 = open("data/train/train_server.txt", "r")
+    fo1 = open("data/test/test_local.txt", "r")
+    fo2 = open("data/test/test_server.txt", "r")
     lines1 = fo1.readlines()
     lines2 = fo2.readlines()
     fo1.close()
@@ -177,7 +177,7 @@ def SortFile():
         lines.append(line[0] + ' ' + line[1] + ' ' + line[2] + ' ' + line[3] +' ' + line[4] + ' ' + line[5] + ' ' + line[6] + ' ' +
                      line[7] + ' ' + line[8] + ' ' + line[9] + ' ' + line[10] +' ' + line[11] + ' ' + line[12] + ' ' + line[13] + '\n')
 
-    fo = open("data/analysis/train.txt", "w")
+    fo = open("data/analysis/test.txt", "w")
     fo.writelines(lines)
     fo.close()
 
@@ -366,7 +366,7 @@ def SingleStatusAnalysis(type):
 if __name__ == '__main__':
     # LocalPeopleNumAnalysis()
     # AddIndex("test_local_server_peoplenum")
-    # SortFile()
+    SortFile()
     # CreateFile()
 
     # ParseTrainResult("1621150682506dqn")
@@ -407,7 +407,7 @@ if __name__ == '__main__':
     # ChangeLocalServerPeopleNum()
     # CreateDataset("file_size_analysis")
 
-    SingleStatusAnalysis("train_local")
+    # SingleStatusAnalysis("train_local")
 
 
 

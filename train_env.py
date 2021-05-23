@@ -29,58 +29,88 @@ class TrainEnv():
         self.observation_space = spaces.Box(np.array([0.0, 0.0, 0.0, 0.0]), np.array([20.0, 1.0, 1.0, 1.0]))
         self.count = 0
 
-    def cal_reward(self, offload, action, train):
+    # def cal_reward(self, offload, action, train):
+    #     done = False
+    #     if train == 1:
+    #         if (self.count == 599):
+    #             if action == 0:
+    #                 if offload:
+    #                     reward = 0
+    #                 else:
+    #                     reward = 1
+    #             elif action == 1:
+    #                 if offload:
+    #                     reward = 1
+    #                 else:
+    #                     reward = 0
+    #             done = True
+    #         else:
+    #             self.count += 1
+    #             if action == 0:
+    #                 if offload:
+    #                     reward = 0
+    #                 else:
+    #                     reward = 1
+    #             elif action == 1:
+    #                 if offload:
+    #                     reward = 1
+    #                 else:
+    #                     reward = 0
+    #     elif train == 0:
+    #         if (self.count == 599):
+    #             if action == 0:
+    #                 if offload:
+    #                     reward = 0
+    #                 else:
+    #                     reward = 1
+    #             elif action == 1:
+    #                 if offload:
+    #                     reward = 1
+    #                 else:
+    #                     reward = 0
+    #             done = True
+    #         else:
+    #             self.count += 1
+    #             if action == 0:
+    #                 if offload:
+    #                     reward = 0
+    #                 else:
+    #                     reward = 1
+    #             elif action == 1:
+    #                 if offload:
+    #                     reward = 1
+    #                 else:
+    #                     reward = 0
+    #     return done, reward
+
+    def cal_reward(self, action, train, local_reward, server_reward):
         done = False
         if train == 1:
             if (self.count == 599):
                 if action == 0:
-                    if offload:
-                        reward = 0
-                    else:
-                        reward = 1
+                    reward = local_reward
                 elif action == 1:
-                    if offload:
-                        reward = 1
-                    else:
-                        reward = 0
+                    reward = server_reward
                 done = True
             else:
                 self.count += 1
                 if action == 0:
-                    if offload:
-                        reward = 0
-                    else:
-                        reward = 1
+                    reward = local_reward
                 elif action == 1:
-                    if offload:
-                        reward = 1
-                    else:
-                        reward = 0
+                    reward = server_reward
         elif train == 0:
             if (self.count == 599):
                 if action == 0:
-                    if offload:
-                        reward = 0
-                    else:
-                        reward = 1
+                    reward = local_reward
                 elif action == 1:
-                    if offload:
-                        reward = 1
-                    else:
-                        reward = 0
+                    reward = server_reward
                 done = True
             else:
                 self.count += 1
                 if action == 0:
-                    if offload:
-                        reward = 0
-                    else:
-                        reward = 1
+                    reward = local_reward
                 elif action == 1:
-                    if offload:
-                        reward = 1
-                    else:
-                        reward = 0
+                    reward = server_reward
         return done, reward
 
     def step(self, action, train):
@@ -90,33 +120,43 @@ class TrainEnv():
         memory_usage = float(readLocalReward(self.count, train)['memory_usage'])
         cpu_usage = float(readLocalReward(self.count, train)['cpu_usage'])
 
-        if local_people_num == 0:
-            local_r1 = 0
-        else:
-            local_r1 = math.log(local_people_num + local_confidence_sum) / local_process_time
-        local_r2 = math.exp(memory_usage + cpu_usage)
-        local_reward = local_r1 - local_r2
-
         server_people_num = float(readServerReward(self.count, train)['server_people_num'])
         server_confidence_sum = float(readServerReward(self.count, train)['server_confidence_sum'])
         server_process_time = float(readServerReward(self.count, train)['server_process_time'])
-        server_transmission_time_selftest = float(readServerReward(self.count, train)['server_transmission_time_selftest'])
+        server_transmission_time_selftest = float(
+            readServerReward(self.count, train)['server_transmission_time_selftest'])
         server_transmission_time_4g = float(readServerReward(self.count, train)['server_transmission_time_4g'])
         server_transmission_time_5g = float(readServerReward(self.count, train)['server_transmission_time_5g'])
+
+        if local_people_num == 0:
+            local_r1 = 0
+        else:
+            local_r1 = local_confidence_sum / math.log(local_process_time)
+        local_r2 = memory_usage + cpu_usage
 
         if server_people_num == 0:
             server_r1 = 0
         else:
-            server_r1 = math.log(server_people_num + server_confidence_sum) / server_process_time
-        server_r2 = math.exp(server_transmission_time_selftest)
+            server_r1 = server_confidence_sum / math.log(server_process_time)
+        server_r2 = server_transmission_time_selftest
+
+        r1_sum = local_r1 + server_r1
+        local_r1 = local_r1 / r1_sum
+        server_r1 = server_r1 / r1_sum
+        r2_sum = local_r2 + server_r2
+        local_r2 = local_r2 / r2_sum
+        server_r2 = server_r2 / r2_sum
+
+        local_reward = local_r1 - local_r2
         server_reward = server_r1 - server_r2
 
         offload = local_reward < server_reward
 
-        done, reward = self.cal_reward(offload, action, train)
+        # done, reward = self.cal_reward(offload, action, train)
+        done, reward = self.cal_reward(action, train, local_reward, server_reward)
 
         state = np.array(
-            [readLocalReward(self.count, train)['local_confidence_sum'], readLocalReward(self.count, train)['file_size'],
+            [readLocalReward(self.count, train)['local_people_num'], readLocalReward(self.count, train)['file_size'],
              readLocalReward(self.count, train)['memory_usage'], readLocalReward(self.count, train)['cpu_usage']])
 
         return state, reward, done, {}
@@ -125,7 +165,7 @@ class TrainEnv():
         self.count = 0
 
         state = np.array(
-            [readLocalReward(self.count, train)['local_confidence_sum'], readLocalReward(self.count, train)['file_size'],
+            [readLocalReward(self.count, train)['local_people_num'], readLocalReward(self.count, train)['file_size'],
              readLocalReward(self.count, train)['memory_usage'], readLocalReward(self.count, train)['cpu_usage']])
 
         return state

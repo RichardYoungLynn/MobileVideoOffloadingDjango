@@ -32,7 +32,7 @@ from parl.utils import summary, logger
 from tqdm import tqdm
 from train_env import TrainEnv
 
-MEMORY_SIZE = 20000
+MEMORY_SIZE = 600
 MEMORY_WARMUP_SIZE = 200
 UPDATE_FREQ = 5
 GAMMA = 0.99
@@ -96,13 +96,8 @@ def main():
 
     pbar = tqdm(total=args.max_episode)
 
-    if os.path.exists('dqn_model'):
-        agent.restore('./dqn_model')
-        print("加载模型成功，开始预测：")
-        run_evaluate_episode(env, agent)
-
     log_list = []
-    fo = open("log/" + str(math.floor(time.time() * 1000.0)) + "dueling.txt", "w")
+    fo = open("log/" + str(math.floor(time.time() * 1000.0)) + "dqn.txt", "w")
     train_episode = 0
     test_episode = 0
     while train_episode < args.max_episode:
@@ -122,7 +117,7 @@ def main():
     fo.close()
     pbar.close()
 
-    agent.save('./dqn_model')
+    agent.save('./dqn_models/dqn_model5')
     print("模型保存成功")
 
 
@@ -139,7 +134,7 @@ if __name__ == '__main__':
     parser.add_argument(
         '--max_episode',
         type=int,
-        default=int(5000),
+        default=int(2000),
         help='maximum environmental episodes of games')
 
     args = parser.parse_args()
